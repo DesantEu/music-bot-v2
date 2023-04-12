@@ -10,4 +10,7 @@ search_local_success = 'Скачан. Кайф'
 search_yt = 'Ищу в интернете...'
 downloading = 'Скачиваю...'
 search_fail = 'Чет не получилось найти('
+download_fail = 'Не получилось скачать >:('
 
+not_available = 'Пока не могу('
+sorry = 'Сори но у тебя дед сдох'

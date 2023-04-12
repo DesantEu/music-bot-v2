@@ -21,7 +21,7 @@ async def edit(id, title:str, body:dict[str,str]={}, color=discord.Color.from_rg
 
         emb.color = color
                 
-        await messages[id].edit(embed=emb)
+        messages[id] = await messages[id].edit(embed=emb)
 
 # adds a field to an embed
 async def add_status(id, name, value) -> int:
@@ -30,7 +30,7 @@ async def add_status(id, name, value) -> int:
 
     print("adding field")
     emb = messages[id].embeds[0].add_field(name=name, value=value)
-    await messages[id].edit(embed=emb)
+    messages[id] = await messages[id].edit(embed=emb)
 
     return len(messages[id].embeds[0].fields) - 1
 
@@ -43,18 +43,18 @@ async def edit_status(id, ind, value):
 
     # emb = messages[id].embeds[0].remove_field(ind).insert_field_at(ind, name=name, value=value)
     emb = messages[id].embeds[0].set_field_at(ind, name=name, value=value)
-    await messages[id].edit(embed=emb)
+    messages[id] = await messages[id].edit(embed=emb)
 
-async def edit_title(id, title):
-    if not id in messages or len(messages[id].embeds) == 0:
-        return -1
-    
-    old_emb = messages[id].embeds[0]
-    emb = discord.Embed(title=title, color=old_emb.color)
-    for i in old_emb.fields:
-        emb.add_field(name=i.name, value=i.value)
-
-    await messages[id].edit(embed=emb)
-
-
+# async def edit_title(id, title):
+#     if not id in messages or len(messages[id].embeds) == 0:
+#         return -1
+#     
+#     old_emb = messages[id].embeds[0]
+#     emb = discord.Embed(title=title, color=old_emb.color)
+#     for i in old_emb.fields:
+#         emb.add_field(name=i.name, value=i.value)
+#
+#     messages[id] = await messages[id].edit(embed=emb)
+#
+#
 

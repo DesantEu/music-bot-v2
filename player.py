@@ -4,7 +4,6 @@ import ytHandler as yt
 import dcHandler as dc
 import bot_locale as loc
 import playlists
-import localPlaylists
 
 async def play(bot:discord.Client, message:discord.Message, prompt:str, inst:Instance):
     # handle empty prompts
@@ -18,10 +17,12 @@ async def play(bot:discord.Client, message:discord.Message, prompt:str, inst:Ins
     if prompt.startswith('https://'):
         # handle playlists
         if 'list=' in prompt:
-            pass
+            await playlists.play_playlist(bot, message, prompt, inst)
         # handle a single song
         else:
-            pass
+            await yt.play_link(bot, message, prompt, inst)
+    else:
+        await yt.play_prompt(bot, message, prompt, inst)
             
         
     

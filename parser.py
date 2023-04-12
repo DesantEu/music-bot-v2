@@ -1,6 +1,7 @@
 import discord
 from instance import Instance
 import player
+import localPlaylists
 
 import dcHandler as dc
 
@@ -21,7 +22,7 @@ async def parse(bot, message, instance:Instance):
         mess = await dc.send("test shit", message.channel)
         field = await dc.add_status(mess, "test1", "test2")
         await dc.edit_status(mess, field, "we good")
-        await dc.edit_title(mess, "test good!!!!!")
+        # await dc.edit_title(mess, "test good!!!!!")
 
 #     if args[0] in ['p', "play"]:
 #         await mplayer.play(bot, args[1], message)
