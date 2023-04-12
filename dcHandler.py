@@ -35,7 +35,7 @@ async def add_status(id, name, value) -> int:
     return len(messages[id].embeds[0].fields) - 1
 
 
-async def edit_status(id, ind, value):
+async def edit_status(id, ind, value) -> int:
     if not id in messages or len(messages[id].embeds) == 0 or ind > len(messages[id].embeds[0].fields) - 1:
         return -1
 
@@ -44,6 +44,53 @@ async def edit_status(id, ind, value):
     # emb = messages[id].embeds[0].remove_field(ind).insert_field_at(ind, name=name, value=value)
     emb = messages[id].embeds[0].set_field_at(ind, name=name, value=value)
     messages[id] = await messages[id].edit(embed=emb)
+    return 0
+
+
+def isInVC(author):
+    return type(author) == discord.Member and not author.voice is None
+
+
+async def join(message, inst) -> int:
+    print('trying to join vc')
+    try:
+        # connect if not yet connected
+        try:
+            inst.vc
+        except:
+            print('im not in a vc')
+            inst.vc = await message.author.voice.channel.connect()
+            print('connected to vc')
+            return 0
+        print('im in vc')
+        # move to other channel maybe
+        if not inst.vc.channel == message.author.voice.channel:
+            print('trying to move to another vc')
+            await inst.vc.move_to(message.author.voice.channel)
+            print('moved')
+        return 0
+    except Exception as e:
+        print(f"exception caught: {e}")
+        return -1
+
+async def leave(inst):
+    try:
+        try:
+            inst.vc
+        except:
+            print('cant leave vc: not in a vc')
+            return 1
+
+        await inst.vc.disconnect()
+        del(inst.vc)
+        print('left vc')
+
+        return 0
+    except Exception as e:
+        print(f'exception leaving: {e}')
+
+        return -1
+    
 
 # async def edit_title(id, title):
 #     if not id in messages or len(messages[id].embeds) == 0:

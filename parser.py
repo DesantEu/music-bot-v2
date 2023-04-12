@@ -8,7 +8,6 @@ import dcHandler as dc
 non_vc_commands = [f'//help', f'>help']
 async def parse(bot, message, instance:Instance):
     msg = message.content[len(instance.prefix):]
-    chan = message.channel
 
     args = msg.split(" ", 1)
     args[0] = args[0].lower()
@@ -23,6 +22,13 @@ async def parse(bot, message, instance:Instance):
         field = await dc.add_status(mess, "test1", "test2")
         await dc.edit_status(mess, field, "we good")
         # await dc.edit_title(mess, "test good!!!!!")
+
+    elif args[0] in ['join']:
+        res = await dc.join(message, instance)
+        await dc.send(str(res), message.channel)
+
+    elif args[0] in ['leave']:
+        await dc.leave(instance)
 
 #     if args[0] in ['p', "play"]:
 #         await mplayer.play(bot, args[1], message)

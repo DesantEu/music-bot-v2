@@ -14,3 +14,5 @@ download_fail = 'Не получилось скачать >:('
 
 not_available = 'Пока не могу('
 sorry = 'Сори но у тебя дед сдох'
+no_vc = ''
+left_vc = ''

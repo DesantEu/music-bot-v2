@@ -4,6 +4,8 @@ import dcHandler as dc
 import bot_locale as loc
 from datetime import datetime
 import re, os
+from instance import Instance
+import player
 # options = {
 #     'format': 'bestaudio/best',
 #     'keepvideo': False,
@@ -13,7 +15,10 @@ _dl = yt.YoutubeDL()
 
 
 async def get_title(link:str):
-    res = _dl.extract_info(link, download=False)
+    try:
+        res = _dl.extract_info(link, download=False)
+    except:
+        return -1
 
     if res:
         return res['title']
@@ -24,7 +29,7 @@ async def get_link(title:str):
     res = _dl
 
 
-async def play_link(bot, message, link, inst, silent=False) -> int:
+async def play_link(bot, message, link, inst:Instance, silent=False) -> int:
     emb = ''
     st = -2
     
@@ -46,6 +51,7 @@ async def play_link(bot, message, link, inst, silent=False) -> int:
         
         if dl == 0:
             if not silent: await dc.edit_status(emb, st, loc.search_local_success)
+            inst.queue.append(link, title)
             return 0
         else:
             if not silent: await dc.edit_status(emb, st, loc.download_fail)
@@ -54,15 +60,12 @@ async def play_link(bot, message, link, inst, silent=False) -> int:
     # local search success
     else:
         if not silent: await dc.edit_status(emb, st, loc.search_local_success)
+        inst.queue.append(link, title)
         return 0
 
-
-
-
-        
-
 async def play_prompt(bot, message, prompt, inst, silent=False):
-    pass
+    return await play_link(bot, message, f'ytsearch:{prompt}', inst, silent)
+
 
 async def download(link, filename):
     #TODO: this is probably dumb
