@@ -19,3 +19,6 @@ class Queue:
 
     def clear(self):
         self.q = []
+
+    def __str__(self) -> str:
+        return '\n'.join([f'{self.q.index(i) + 1}. ' + i.title for i in self.q])

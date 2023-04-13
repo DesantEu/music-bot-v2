@@ -1,16 +1,11 @@
 import yt_dlp as yt
-import json
+# import json
 import dcHandler as dc
 import bot_locale as loc
-from datetime import datetime
+# from datetime import datetime
 import re, os
-from instance import Instance
-import player
-# options = {
-#     'format': 'bestaudio/best',
-#     'keepvideo': False,
-#     'outtmpl': filename,
-# }
+
+
 _dl = yt.YoutubeDL()
 
 
@@ -25,11 +20,8 @@ async def get_title(link:str):
     else:
         return -1
 
-async def get_link(title:str):
-    res = _dl
 
-
-async def play_link(bot, message, link, inst:Instance, silent=False) -> int:
+async def play_link(message, link, inst, silent=False) -> int:
     emb = ''
     st = -2
     
@@ -63,8 +55,8 @@ async def play_link(bot, message, link, inst:Instance, silent=False) -> int:
         inst.queue.append(link, title)
         return 0
 
-async def play_prompt(bot, message, prompt, inst, silent=False):
-    return await play_link(bot, message, f'ytsearch:{prompt}', inst, silent)
+async def play_prompt(message, prompt, inst, silent=False):
+    return await play_link(message, f'ytsearch:{prompt}', inst, silent)
 
 
 async def download(link, filename):

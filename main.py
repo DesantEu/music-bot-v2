@@ -4,6 +4,8 @@ import handler
 intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True
+intents.reactions = True
+
 
 client = discord.Client(intents=intents)
 

@@ -6,8 +6,8 @@ import localPlaylists
 import dcHandler as dc
 
 non_vc_commands = [f'//help', f'>help']
-async def parse(bot, message, instance:Instance):
-    msg = message.content[len(instance.prefix):]
+async def parse(bot, message:discord.Message, inst:Instance):
+    msg = message.content[len(inst.prefix):]
 
     args = msg.split(" ", 1)
     args[0] = args[0].lower()
@@ -15,7 +15,28 @@ async def parse(bot, message, instance:Instance):
         args.append('')
 
     if args[0] in ['p', 'play']:
-        await player.play(bot, message, args[1], instance)
+        await player.play(message, args[1], inst)
+
+    elif args[0] in ['s', 'skip']:
+        if not inst.hasVC():
+            await message.add_reaction(dc.reactions.fyou)
+            return
+        if player.skip(inst) == 0:
+            await message.add_reaction(dc.reactions.check)
+        else:
+            await message.add_reaction(dc.reactions.cross)
+
+    elif args[0] in ['stop']:
+        if not inst.hasVC():
+            await message.add_reaction(dc.reactions.fyou)
+            return
+        if player.stop(inst) and await dc.leave(inst) == 0:
+            await message.add_reaction(dc.reactions.wave)
+        else:
+            await message.add_reaction(dc.reactions.cross)
+
+    
+
 
     elif args[0] in ['test']:
         mess = await dc.send("test shit", message.channel)
@@ -24,11 +45,11 @@ async def parse(bot, message, instance:Instance):
         # await dc.edit_title(mess, "test good!!!!!")
 
     elif args[0] in ['join']:
-        res = await dc.join(message, instance)
+        res = await dc.join(message, inst)
         await dc.send(str(res), message.channel)
 
     elif args[0] in ['leave']:
-        await dc.leave(instance)
+        await dc.leave(inst)
 
 #     if args[0] in ['p', "play"]:
 #         await mplayer.play(bot, args[1], message)

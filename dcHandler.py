@@ -5,7 +5,10 @@ import discord
 messages:dict[int, discord.Message] = {}
 
 async def send(msg:str, channel, color=discord.Color.from_rgb(255, 166, 201)):
-    emb = discord.Embed(title=msg)
+    if msg == '':
+        emb = discord.Embed()
+    else:
+        emb = discord.Embed(title=msg)
     emb.color = color
     message = await channel.send(embed=emb)
     messages[message.id] = message
@@ -55,9 +58,7 @@ async def join(message, inst) -> int:
     print('trying to join vc')
     try:
         # connect if not yet connected
-        try:
-            inst.vc
-        except:
+        if not inst.hasVC():
             print('im not in a vc')
             inst.vc = await message.author.voice.channel.connect()
             print('connected to vc')
@@ -73,11 +74,9 @@ async def join(message, inst) -> int:
         print(f"exception caught: {e}")
         return -1
 
-async def leave(inst):
+async def leave(inst) -> int:
     try:
-        try:
-            inst.vc
-        except:
+        if not inst.hasVC:
             print('cant leave vc: not in a vc')
             return 1
 
@@ -90,6 +89,19 @@ async def leave(inst):
         print(f'exception leaving: {e}')
 
         return -1
+
+
+class reactions:
+    check = '✅'
+    cross = '❌'
+    fyou = '🖕'
+    wave = '👋'
+   
+    cold = '🥶'
+    hot = '🥵'
+
+    pls ='🥺'
+    pls_tears = '🥹'
     
 
 # async def edit_title(id, title):
