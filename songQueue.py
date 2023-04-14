@@ -34,3 +34,7 @@ class Queue:
 
     def __str__(self) -> str:
         return '\n'.join([f'{self.q.index(i) + 1}. ' + i.title for i in self.q])
+
+    def toStrWithCurrent(self, current) -> str:
+        return '\n'.join([f"{'> ' if current == self.q.index(i) else '  '}" + f'{self.q.index(i) + 1}. ' + i.title for i in self.q])
+
