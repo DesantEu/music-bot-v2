@@ -74,19 +74,41 @@ def pause(inst) -> bool:
     inst.isPaused = True
     return True
 
-def skip(inst, num=None, afterSong=False) -> int:
+def skip(inst, num='', afterSong=False) -> int:
     if not inst.hasVC():
         return -1
-    
-    # drop play.after to avoid recursive skipping
-    if not afterSong:
-        inst.skipSkip = True
 
-    inst.vc.stop()
-    next = inst.current + 1
-    # roll over forward
-    if next >= inst.queue.len():
-        next = 0
+    if inst.queue.len() == 0:
+        return -1
+
+    # drop play.after to avoid recursive skipping
+    if inst.vc.is_playing():
+        if not afterSong:
+            inst.skipSkip = True
+        inst.vc.stop()
+
+    # handle numbers:
+    if not num == '':
+        try:
+            num = int(num)
+        except:
+            return -1
+
+
+        
+        if num < 0 or num > inst.queue.len():
+            return -1
+        
+        if num == 0:
+            next = 0
+        else:
+            next = num - 1
+    # skip no number
+    else:
+        next = inst.current + 1
+        # roll over forward
+        if next >= inst.queue.len():
+            next = 0
 
     play_from_queue(next, inst)
     return 0

@@ -1,5 +1,6 @@
 import discord
 import parser
+import bot_locale as loc
 from instance import Instance
 
 
@@ -14,6 +15,7 @@ instances = {}
 async def handle(bot:discord.Client, message:discord.Message):
     # PM handler
     if not message.guild:
+        await message.channel.send(loc.pm_reply)
         return
 
     # add new instance if needed

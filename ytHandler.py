@@ -5,8 +5,10 @@ import bot_locale as loc
 # from datetime import datetime
 import re, os
 
-
-_dl = yt.YoutubeDL()
+options = {
+    'max_downloads' : 1
+}
+_dl = yt.YoutubeDL(options)
 
 
 async def get_title(link:str):
@@ -16,6 +18,8 @@ async def get_title(link:str):
         return -1
 
     if res:
+        if 'ytsearch' in link:
+            return res['entries'][0]['title']
         return res['title']
     else:
         return -1
@@ -56,7 +60,7 @@ async def play_link(message, link, inst, silent=False) -> int:
         return 0
 
 async def play_prompt(message, prompt, inst, silent=False):
-    return await play_link(message, f'ytsearch:{prompt}', inst, silent)
+    return await play_link(message, f'ytsearch1:{prompt}', inst, silent)
 
 
 async def download(link, filename):
