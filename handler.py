@@ -2,6 +2,7 @@ import discord
 import parser
 import bot_locale as loc
 from instance import Instance
+import dcHandler as dc
 
 
 prefix = '//'
@@ -9,7 +10,7 @@ admin_prefix = '>'
 
 admins = ['Desant#0148']
 
-instances = {}
+instances:dict[int, Instance] = {}
 
 
 async def handle(bot:discord.Client, message:discord.Message):
@@ -26,3 +27,8 @@ async def handle(bot:discord.Client, message:discord.Message):
     # parse regular commands
     if message.content.startswith(prefix):
         await parser.parse(bot, message, instances[gid])
+
+
+async def handle_voice(member, before, after):
+    if not dc.isInVC(member):
+        await instances[member.guild.id].on_disconnect()

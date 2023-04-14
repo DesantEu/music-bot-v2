@@ -24,6 +24,11 @@ async def on_message(message):
 
     await handler.handle(client, message)
 
+@client.event
+async def on_voice_state_update(member, before, after):
+    if member == client.user:
+        await handler.handle_voice(member, before, after)
+
 # yes, you need to make a token.txt
 with open('token.txt', 'r') as token:
     client.run(token.read())
