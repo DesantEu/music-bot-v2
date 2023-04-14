@@ -14,6 +14,18 @@ class Queue:
     def append(self, link, title):
         self.q.append(Song(link, title))
 
+    def pop(self, index):
+        if index.startswith('-') or not index.isdigit() or self.len() == 0 or index == '':
+            return False
+
+        index = int(index)
+        if index < 1 or index > self.len():
+            return False
+
+        self.q.pop(index - 1)
+        return True
+            
+
     def len(self):
         return len(self.q)
 

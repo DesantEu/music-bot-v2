@@ -35,6 +35,17 @@ async def parse(bot, message:discord.Message, inst:Instance):
         else:
             await message.add_reaction(dc.reactions.cross)
 
+    elif args[0] in ['rm', 'remove']:
+        if inst.queue.len() == 0 or not inst.hasVC():
+            await message.add_reaction(dc.reactions.fyou)
+            return
+        if inst.queue.pop(args[1]):
+            if inst.queue.len() == 0:
+                player.stop(inst)
+            await message.add_reaction(dc.reactions.check)
+        else:
+            await message.add_reaction(dc.reactions.cross)
+
     
 
 
