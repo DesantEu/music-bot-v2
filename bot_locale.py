@@ -12,6 +12,9 @@ downloading = 'Скачиваю...'
 search_fail = 'Чет не получилось найти('
 download_fail = 'Не получилось скачать >:('
 
+queue = 'Очередь:'
+now_playing = 'Сейчас играет: '
+
 not_available = 'Пока не могу('
 sorry = 'Сори но у тебя дед сдох'
 no_vc = 'Зайди в вч'

@@ -2,6 +2,7 @@ import discord
 from instance import Instance
 import player
 import localPlaylists
+import bot_locale as loc
 
 import dcHandler as dc
 
@@ -45,6 +46,17 @@ async def parse(bot, message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
+
+    elif args[0] in ['q', 'queue']:
+        if inst.queue.len() == 0 or not inst.hasVC():
+            await message.add_reaction(dc.reactions.fyou)
+            return
+
+        emb = await dc.send(loc.now_playing + "хуй пойми шо", message.channel) # TODO: change
+        msg = await dc.add_status(emb, loc.queue, inst.queue)
+        inst.queue_messages[emb] = msg
+
+
 
     
 

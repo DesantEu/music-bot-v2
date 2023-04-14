@@ -9,6 +9,7 @@ class Instance:
         self.guildid:int = gid
         self.prefix:str = prefix
         self.queue = Queue()
+        self.queue_messages = []
         self.skipSkip = False
         self.song_start_time = datetime.now()
         self.pause_time = datetime.now()
