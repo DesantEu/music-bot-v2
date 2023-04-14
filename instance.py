@@ -1,15 +1,14 @@
 from datetime import datetime
-import asyncio
 import discord
 from songQueue import Queue
 import player
-
+import dcHandler as dc
 class Instance:
     def __init__(self, gid:int, prefix:str):
         self.guildid:int = gid
         self.prefix:str = prefix
         self.queue = Queue()
-        self.queue_messages = []
+        self.queue_messages = {}
         self.skipSkip = False
         self.song_start_time = datetime.now()
         self.pause_time = datetime.now()
@@ -21,31 +20,9 @@ class Instance:
         self.isPaused = False
         self.vc:discord.VoiceClient
 
-        asyncio.Task(self.watcher())
-
     async def update_queue(self):
-        # try:
-        #     self.vc
-        #     
-        #     # return if queue empty
-        #     if self.queue.len() < 1:
-        #         return
-        #     # otherwise start playing something
-        #     if self.isStopped:
-        #         self.current = 0
-        #         await player.resume(self)
-        #
-        #     
-        #
-        # except:
-        #     # stop if nothing is to be played
-        #     # if self.isPlaying or self.isPaused:
-        #     #     await player.stop(self)
-        #     pass
-        #
-        #
-
-        pass
+        for i in self.queue_messages:
+            await dc.edit_status(i, self.queue_messages[i], self.queue)
 
     def after_song(self, error):
         if error:
@@ -60,12 +37,11 @@ class Instance:
         pass
 
 
-    async def check_disconnect(self):
-        pass
+    async def on_disconnect(self):
+        player.stop(self)
+        await dc.leave(self)
+        print('got kicked, leaving')
 
-    async def watcher(self):
-        await self.update_queue()
-        await self.check_disconnect()
 
     def hasVC(self) -> bool:
         try:

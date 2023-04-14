@@ -48,6 +48,7 @@ async def play_link(message, link, inst, silent=False) -> int:
         if dl == 0:
             if not silent: await dc.edit_status(emb, st, loc.search_local_success)
             inst.queue.append(link, title)
+            await inst.update_queue()
             return 0
         else:
             if not silent: await dc.edit_status(emb, st, loc.download_fail)
@@ -57,6 +58,7 @@ async def play_link(message, link, inst, silent=False) -> int:
     else:
         if not silent: await dc.edit_status(emb, st, loc.search_local_success)
         inst.queue.append(link, title)
+        await inst.update_queue()
         return 0
 
 async def play_prompt(message, prompt, inst, silent=False):

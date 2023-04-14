@@ -41,6 +41,7 @@ async def parse(bot, message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.fyou)
             return
         if inst.queue.pop(args[1]):
+            await inst.update_queue()
             if inst.queue.len() == 0:
                 player.stop(inst)
             await message.add_reaction(dc.reactions.check)
