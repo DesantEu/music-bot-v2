@@ -1,5 +1,6 @@
 import discord
 import handler
+import os
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -30,5 +31,9 @@ async def on_voice_state_update(member, before, after):
         await handler.handle_voice(member, before, after)
 
 # yes, you need to make a token.txt
-with open('token.txt', 'r') as token:
-    client.run(token.read())
+if os.path.exists('testToken.txt'):
+    with open('testToken.txt', 'r') as token:
+        client.run(token.read())
+else:
+    with open('token.txt', 'r') as token:
+        client.run(token.read())

@@ -3,10 +3,15 @@ import parser
 import bot_locale as loc
 from instance import Instance
 import dcHandler as dc
+import os
 
+if not os.path.exists('testToken.txt'):
+    prefix = '//'
+    admin_prefix = '>'
+else:
+    prefix = '..'
+    admin_prefix = ','
 
-prefix = '//'
-admin_prefix = '>'
 
 admins = ['Desant#0148']
 
