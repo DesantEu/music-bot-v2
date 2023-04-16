@@ -18,7 +18,7 @@ admins = ['Desant#0148']
 instances:dict[int, Instance] = {}
 
 
-async def handle(bot:discord.Client, message:discord.Message):
+async def handle(message:discord.Message):
     # PM handler
     if not message.guild:
         await message.channel.send(loc.pm_reply)
@@ -31,7 +31,7 @@ async def handle(bot:discord.Client, message:discord.Message):
 
     # parse regular commands
     if message.content.startswith(prefix):
-        await parser.parse(bot, message, instances[gid])
+        await parser.parse(message, instances[gid])
 
 
 async def handle_voice(member, before, after):

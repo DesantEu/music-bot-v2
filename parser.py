@@ -7,7 +7,7 @@ import bot_locale as loc
 import dcHandler as dc
 
 non_vc_commands = [f'//help', f'>help']
-async def parse(bot, message:discord.Message, inst:Instance):
+async def parse(message:discord.Message, inst:Instance):
     msg = message.content[len(inst.prefix):]
 
     args = msg.split(" ", 1)

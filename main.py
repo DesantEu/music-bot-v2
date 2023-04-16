@@ -23,7 +23,7 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-    await handler.handle(client, message)
+    await handler.handle(message)
 
 @client.event
 async def on_voice_state_update(member, before, after):
