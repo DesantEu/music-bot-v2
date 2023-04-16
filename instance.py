@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import OrderedDict
 import discord
 from songQueue import Queue
 import player
@@ -21,6 +22,14 @@ class Instance:
         self.vc:discord.VoiceClient
 
     async def update_queue(self):
+        # delete old queue messages
+        max_messages = 5
+        if len(self.queue_messages) > max_messages:
+            while True:
+                self.queue_messages.pop(list(self.queue_messages.items())[0][0])
+                if len(self.queue_messages) <= max_messages:
+                    break
+        
         for i in self.queue_messages:
             await dc.edit_status(i, self.queue_messages[i], self.queue)
 
