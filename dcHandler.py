@@ -96,6 +96,7 @@ class reactions:
     cross = '❌'
     fyou = '🖕'
     wave = '👋'
+    thumbs_up = '👍'
    
     cold = '🥶'
     hot = '🥵'

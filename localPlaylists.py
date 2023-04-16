@@ -1,2 +1,99 @@
-async def play_playlist(bot, message, link, inst):
-    pass
+import bot_locale as loc
+import dcHandler as dc
+import ytHandler as yt
+import os
+import json
+import player
+
+async def play_playlist(message, name, inst) -> int:
+    # handle empty prompts
+    if name == '':
+        await message.add_reaction(dc.reactions.fyou)
+        return -1
+
+    # check if the user is in a vc
+    if not dc.isInVC(message.author):
+        await dc.send(loc.no_vc, message.channel)
+        return -1
+
+
+    # check if playlist exists
+    if not os.path.exists(f'playlists/{name}.lpl'):
+        await dc.send(loc.playlist_not_found, message.channel)
+        return -1
+
+    # open the playlist
+    with open(f'playlists/{name}.lpl', 'r') as file:
+        try:
+            playlist = json.loads(file.read())
+        except:
+            await dc.send(loc.playlist_broken, message.channel)
+            return -1
+            
+
+        # notify the server
+        emb = await dc.send(loc.playlist_on + name, message.channel)
+        emb_fields = {}
+        song_available = False
+        tried_connecting = False
+
+        # add songs to embed
+        for song in playlist:
+            emb_fields[song] = await dc.add_status(emb, song, loc.playlist_waiting)
+        # add songs to queue
+        for song in playlist:
+            # first try the links
+            await dc.edit_status(emb, emb_fields[song], loc.search)
+            if await yt.play_link(message, playlist[song], inst, silent=True) == 0:
+                await dc.edit_status(emb, emb_fields[song], loc.search_local_success)
+                song_available = True
+            # if the link fails try to find by name
+            else:
+                await dc.edit_status(emb, emb_fields[song], loc.playlist_song_outdated)
+                if await yt.play_prompt(message, song, inst, silent=True) == 0:
+                    await dc.edit_status(emb, emb_fields[song], loc.search_local_success)
+                    song_available = True
+                # if everything fails theres nothing we can do really
+                else:
+                    await dc.edit_status(emb, emb_fields[song], loc.search_fail)
+
+            # if nothing is playing we should start playing i guess
+            if song_available and not tried_connecting:
+                tried_connecting = True
+                # check vc again just to be sure
+                if not dc.isInVC(message.author):
+                    await dc.send(loc.left_vc, message.channel)
+                    return -1
+                else:
+                    await dc.join(message, inst)
+                    if not inst.isPlaying:
+                        player.play_from_queue(0, inst) # TODO: remove
+
+        # check vc again just for fun
+        if not dc.isInVC(message.author):
+            await dc.send(loc.left_vc, message.channel)
+
+        await dc.add_status(emb, loc.playlist_success, dc.reactions.pls_tears)
+
+        return 0
+
+
+async def save_playlist(message, name, inst):
+    # handle empty prompts
+    if name == '' or inst.queue.len() == 0:
+        await message.add_reaction(dc.reactions.fyou)
+        return -1
+
+
+    if os.path.exists(f'playlists/{name}.lpl'):
+        emb = await dc.send(loc.playlist_rewrite + name, message.channel)
+    else:
+        emb = await dc.send(loc.playlist_saving + name, message.channel)
+
+    try:
+        with open(f'playlists/{name}.lpl', 'w+') as file:
+            file.write(inst.queue.toJsonStr())
+        await dc.add_status(emb, dc.reactions.thumbs_up, dc.reactions.cold)
+    except:
+        await dc.add_status(emb, dc.reactions.cross, dc.reactions.hot)
+        

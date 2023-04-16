@@ -1,3 +1,5 @@
+import json
+
 class Song:
     def __init__(self, link, title):
         self.link = link
@@ -37,4 +39,11 @@ class Queue:
 
     def toStrWithCurrent(self, current) -> str:
         return '\n'.join([f"{'> ' if current == self.q.index(i) else '  '}" + f'{self.q.index(i) + 1}. ' + i.title for i in self.q])
+
+    def toJsonStr(self) -> str:
+        rJson = {}
+        for i in self.q:
+            rJson[i.title] = i.link
+
+        return json.dumps(rJson)
 

@@ -1,7 +1,7 @@
 import discord
 from instance import Instance
 import player
-import localPlaylists
+import localPlaylists as lpl
 import bot_locale as loc
 
 import dcHandler as dc
@@ -58,7 +58,10 @@ async def parse(bot, message:discord.Message, inst:Instance):
         inst.queue_messages[emb] = msg
 
 
-
+    elif args[0] in ['save', 'ss']:
+        await lpl.save_playlist(message, args[1], inst)
+    elif args[0] in ['pp']:
+        await lpl.play_playlist(message, args[1], inst)
     
 
 
