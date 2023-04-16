@@ -48,6 +48,17 @@ async def parse(bot, message:discord.Message, inst:Instance):
         else:
             await message.add_reaction(dc.reactions.cross)
 
+    elif args[0] in ['cc', 'clear']:
+        if not inst.hasVC() or inst.queue.len() == 0:
+            await message.add_reaction(dc.reactions.fyou)
+            return
+
+        if player.stop(inst):
+            await message.add_reaction(dc.reactions.check)
+        else:
+            await message.add_reaction(dc.reactions.cross)
+            
+
     elif args[0] in ['q', 'queue']:
         if inst.queue.len() == 0 or not inst.hasVC():
             await message.add_reaction(dc.reactions.fyou)
@@ -60,20 +71,20 @@ async def parse(bot, message:discord.Message, inst:Instance):
 
     elif args[0] in ['save', 'ss']:
         await lpl.save_playlist(message, args[1], inst)
+
     elif args[0] in ['pp']:
         await lpl.play_playlist(message, args[1], inst)
     
 
+    elif args[0] in ['join']:
+        if not inst.hasVC() or inst.queue.len() == 0:
+            await message.add_reaction(dc.reactions.fyou)
+            return
 
-    # elif args[0] in ['test']:
-    #     mess = await dc.send("test shit", message.channel)
-    #     field = await dc.add_status(mess, "test1", "test2")
-    #     await dc.edit_status(mess, field, "we good")
-    #     # await dc.edit_title(mess, "test good!!!!!")
-    #
-    # elif args[0] in ['join']:
-    #     res = await dc.join(message, inst)
-    #     await dc.send(str(res), message.channel)
+        if await dc.join(message, inst):
+            await message.add_reaction(dc.reactions.check)
+        else:
+            await message.add_reaction(dc.reactions.cross)
     #
     # elif args[0] in ['leave']:
     #     await dc.leave(inst)
