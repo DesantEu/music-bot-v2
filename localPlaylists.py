@@ -25,37 +25,34 @@ async def play_playlist(message, name, inst) -> int:
     # open the playlist
     with open(f'playlists/{name}.lpl', 'r') as file:
         try:
-            playlist = json.loads(file.read())
+            playlist:dict = json.loads(file.read())
         except:
             await dc.send(loc.playlist_broken, message.channel)
             return -1
             
 
         # notify the server
-        emb = await dc.send(loc.playlist_on + name, message.channel)
-        emb_fields = {}
+        emb = await dc.send_long(loc.playlist_on, name, [('-', i) for i in playlist], message.channel)
         song_available = False
         tried_connecting = False
 
-        # add songs to embed
-        for song in playlist:
-            emb_fields[song] = await dc.add_status(emb, song, loc.playlist_waiting)
         # add songs to queue
         for song in playlist:
+            ind = list(playlist).index(song)
             # first try the links
-            await dc.edit_status(emb, emb_fields[song], loc.search)
+            await dc.edit_long_status(emb, ind, '>')
             if await yt.play_link(message, playlist[song], inst, silent=True) == 0:
-                await dc.edit_status(emb, emb_fields[song], loc.search_local_success)
+                await dc.edit_long_status(emb, ind, str(inst.queue.len()))
                 song_available = True
             # if the link fails try to find by name
             else:
-                await dc.edit_status(emb, emb_fields[song], loc.playlist_song_outdated)
+                await dc.edit_long_status(emb, ind, 'V')
                 if await yt.play_prompt(message, song, inst, silent=True) == 0:
-                    await dc.edit_status(emb, emb_fields[song], loc.search_local_success)
+                    await dc.edit_long_status(emb, ind, str(inst.queue.len()))
                     song_available = True
                 # if everything fails theres nothing we can do really
                 else:
-                    await dc.edit_status(emb, emb_fields[song], loc.search_fail)
+                    await dc.edit_long_status(emb, ind, 'X')
 
             # if nothing is playing we should start playing i guess
             if song_available and not tried_connecting:

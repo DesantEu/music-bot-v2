@@ -15,6 +15,39 @@ async def send(msg:str, channel, color=discord.Color.from_rgb(255, 166, 201)):
     print(f"sent message with id {message.id}")
     return message.id
 
+async def send_long(title:str, smaller_title:str, content:list[tuple[str,str]] ,channel, color=discord.Color.from_rgb(255, 166, 201)):
+    emb = discord.Embed(title=title)
+    emb.color = color
+    emb_content = '\n'.join([f'{i[0]} {i[1]}' for i in content])
+    emb.add_field(name=smaller_title, value=emb_content)
+    message = await channel.send(embed=emb)
+    messages[message.id] = message
+    print(f"sent long message with id {message.id}")
+    return message.id
+
+async def edit_long_status(id, index:int, value:str) -> int:
+    if not id in messages or len(messages[id].embeds) == 0 or len(messages[id].embeds[0].fields) == 0 or messages[id].embeds[0].fields[0].value is None:
+        return -1
+
+    emb = messages[id].embeds[0]
+    old_title = str(emb.fields[0].name)
+    old_content = str(emb.fields[0].value).split('\n')
+
+    print(f'trying to change old content of len {len(old_content)} at index {index}. old value = "{old_content}"')
+
+    new_content = list(old_content[index])
+    new_content[0] = value
+    old_content[index] = ''.join(new_content)
+    print(f'changes have been made, new content: "{old_content}"')
+    emb.clear_fields()
+    emb.add_field(name=old_title, value='\n'.join(old_content))
+
+
+    messages[id] = await messages[id].edit(embed=emb)
+
+    return 0
+
+
 async def edit(id, title:str, body:dict[str,str]={}, color=discord.Color.from_rgb(255, 166, 201)):
     if id in messages:
         emb = discord.Embed(title=title)
@@ -103,6 +136,12 @@ class reactions:
 
     pls ='🥺'
     pls_tears = '🥹'
+
+    black_circle = '⚫'
+    green_circle = '🟢'
+    yellow_circle = '🟡'
+    orange_circle = '🟠'
+    red_circle = '🔴'
     
 
 # async def edit_title(id, title):
