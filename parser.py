@@ -22,7 +22,7 @@ async def parse(bot, message:discord.Message, inst:Instance):
         if not inst.hasVC():
             await message.add_reaction(dc.reactions.fyou)
             return
-        if player.skip(inst) == 0:
+        if player.skip(inst, num=args[1]) == 0:
             await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
