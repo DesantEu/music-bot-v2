@@ -19,8 +19,14 @@ async def get_title(link:str):
 
     if res:
         if 'ytsearch' in link:
-            return res['entries'][0]['title']
-        return res['title']
+            try:
+                return res['entries'][0]['title']
+            except:
+                return -1
+        try:
+            return res['title']
+        except:
+            return -1
     else:
         return -1
 
