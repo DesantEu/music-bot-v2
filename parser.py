@@ -77,7 +77,7 @@ async def parse(message:discord.Message, inst:Instance):
     
 
     elif args[0] in ['join']:
-        if not inst.hasVC() or inst.queue.len() == 0:
+        if not dc.isInVC(message.author):
             await message.add_reaction(dc.reactions.fyou)
             return
 
