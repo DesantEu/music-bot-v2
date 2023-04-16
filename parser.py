@@ -62,18 +62,18 @@ async def parse(bot, message:discord.Message, inst:Instance):
     
 
 
-    elif args[0] in ['test']:
-        mess = await dc.send("test shit", message.channel)
-        field = await dc.add_status(mess, "test1", "test2")
-        await dc.edit_status(mess, field, "we good")
-        # await dc.edit_title(mess, "test good!!!!!")
-
-    elif args[0] in ['join']:
-        res = await dc.join(message, inst)
-        await dc.send(str(res), message.channel)
-
-    elif args[0] in ['leave']:
-        await dc.leave(inst)
+    # elif args[0] in ['test']:
+    #     mess = await dc.send("test shit", message.channel)
+    #     field = await dc.add_status(mess, "test1", "test2")
+    #     await dc.edit_status(mess, field, "we good")
+    #     # await dc.edit_title(mess, "test good!!!!!")
+    #
+    # elif args[0] in ['join']:
+    #     res = await dc.join(message, inst)
+    #     await dc.send(str(res), message.channel)
+    #
+    # elif args[0] in ['leave']:
+    #     await dc.leave(inst)
 
 #     if args[0] in ['p', "play"]:
 #         await mplayer.play(bot, args[1], message)
