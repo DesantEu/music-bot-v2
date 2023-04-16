@@ -81,12 +81,6 @@ def skip(inst, num='', afterSong=False) -> int:
     if inst.queue.len() == 0:
         return -1
 
-    # drop play.after to avoid recursive skipping
-    if inst.vc.is_playing():
-        if not afterSong:
-            inst.skipSkip = True
-        inst.vc.stop()
-
     # handle numbers:
     if not num == '':
         try:
@@ -94,8 +88,6 @@ def skip(inst, num='', afterSong=False) -> int:
         except:
             return -1
 
-
-        
         if num < 0 or num > inst.queue.len():
             return -1
         
@@ -109,6 +101,12 @@ def skip(inst, num='', afterSong=False) -> int:
         # roll over forward
         if next >= inst.queue.len():
             next = 0
+
+    # drop play.after to avoid recursive skipping
+    if inst.vc.is_playing():
+        if not afterSong:
+            inst.skipSkip = True
+        inst.vc.stop()
 
     play_from_queue(next, inst)
     return 0
