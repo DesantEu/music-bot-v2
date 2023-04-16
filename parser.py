@@ -81,7 +81,7 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.fyou)
             return
 
-        if await dc.join(message, inst):
+        if await dc.join(message, inst) == 0:
             await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
