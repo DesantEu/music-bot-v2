@@ -40,7 +40,6 @@ class Instance:
         if self.skipSkip:
             self.skipSkip = False
             return
-        print('after_song is called')
         player.skip(self, afterSong=True)
         pass
 
