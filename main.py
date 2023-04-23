@@ -30,6 +30,13 @@ async def on_voice_state_update(member, before, after):
     if member == client.user:
         await handler.handle_voice(member, before, after)
 
+@client.event
+async def on_reaction_add(reaction, user):
+    if user == client.user:
+        return
+
+    await handler.handle_reaction_add(reaction, user)
+
 # yes, you need to make a token.txt
 if os.path.exists('testToken.txt'):
     with open('testToken.txt', 'r') as token:

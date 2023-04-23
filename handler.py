@@ -37,3 +37,8 @@ async def handle(message:discord.Message):
 async def handle_voice(member, before, after):
     if not dc.isInVC(member):
         await instances[member.guild.id].on_disconnect()
+
+async def handle_reaction_add(reaction:discord.Reaction, user):
+    if reaction.message.id in dc.long_messages:
+        if await dc.long_messages[reaction.message.id].parse_reaction(reaction.emoji) >= 0:
+            await reaction.message.remove_reaction(reaction, user)
