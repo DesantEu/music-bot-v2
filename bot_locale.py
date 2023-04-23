@@ -24,6 +24,7 @@ playlist_rewrite = 'Изменяю плейлист '
 
 queue = 'Очередь:'
 now_playing = 'Сейчас играет: '
+page = 'Страница'
 
 not_available = 'Пока не могу('
 sorry = 'Сори но у тебя дед сдох'
