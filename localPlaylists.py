@@ -32,7 +32,7 @@ async def play_playlist(message, name, inst) -> int:
             
 
         # notify the server
-        emb = await dc.send_long(loc.playlist_on, name, [('-', i) for i in playlist], message.channel)
+        emb = await dc.send_long(loc.playlist_on, name, [['-', i] for i in playlist], message.channel)
         song_available = False
         tried_connecting = False
 

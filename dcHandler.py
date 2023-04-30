@@ -4,7 +4,7 @@ import bot_locale as loc
 # TODO: 
 
 class LongMessage:
-    def __init__(self, title:str, smaller_title:str, content:list[tuple[str,str]], page=0):
+    def __init__(self, title:str, smaller_title:str, content:list[list[str]], page=0):
         self.page:int = page
         self.pages:list[str] = []
         self.title = title
@@ -97,7 +97,10 @@ class LongMessage:
             await self.message.edit(embed=self.genEmbed())
             return 0
         return -1
-
+        
+    def setContent(self, content:list[list[str]]):
+        self.content = content
+        self.regenerate()
 
 
         
@@ -123,12 +126,13 @@ async def send(msg:str, channel, color=discord.Color.from_rgb(255, 166, 201)):
     messages[message.id] = message
     return message.id
 
-async def send_long(title:str, smaller_title:str, content:list[tuple[str,str]], channel, color=discord.Color.from_rgb(255, 166, 201)):
+async def send_long(title:str, smaller_title:str, content:list[list[str]], channel, color=discord.Color.from_rgb(255, 166, 201)):
     global long_messages
 
     msg = LongMessage(title, smaller_title, content)
     await msg.send(channel, color)
     long_messages[msg.message.id] = msg
+    return msg.message.id
     # emb = discord.Embed(title=title)
     # emb.color = color
     # emb_content = '\n'.join([f'{i[0]} {i[1]}' for i in content])
