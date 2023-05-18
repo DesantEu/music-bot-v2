@@ -73,9 +73,7 @@ class LongMessage:
     async def send(self, channel:discord.TextChannel, color=discord.Color.from_rgb(255, 166, 201)):
         self.message = await channel.send(embed=self.genEmbed(color=color))
         await self.refreshReactions()
-        # if self.isMultipage:
-        #     await self.message.add_reaction(reactions.left_arrow)
-        #     await self.message.add_reaction(reactions.right_arrow)
+
 
     async def parse_reaction(self, reaction):
         if not reaction == reactions.left_arrow and not reaction == reactions.right_arrow:
@@ -122,14 +120,7 @@ class LongMessage:
         self.regenerate()
         await self.message.edit(embed=self.genEmbed())
         await self.refreshReactions()
-
-
-
         return 0
-
-
-        
-
 
     def append(self):
         return
@@ -158,13 +149,7 @@ async def send_long(title:str, smaller_title:str, content:list[list[str]], chann
     await msg.send(channel, color)
     long_messages[msg.message.id] = msg
     return msg.message.id
-    # emb = discord.Embed(title=title)
-    # emb.color = color
-    # emb_content = '\n'.join([f'{i[0]} {i[1]}' for i in content])
-    # emb.add_field(name=smaller_title, value=emb_content)
-    # message = await channel.send(embed=emb)
-    # messages[message.id] = message
-    # return message.id
+
 
 async def edit_long_status(id, index:int, value:str) -> int:
     await long_messages[id].edit(index, status=value) # TODO: this could be better some day
@@ -173,25 +158,6 @@ async def edit_long_status(id, index:int, value:str) -> int:
 async def edit_long_content(id, content:list[list]) -> int:
     await long_messages[id].setContent(content)
     return 0
-    # if not id in messages or len(messages[id].embeds) == 0 or len(messages[id].embeds[0].fields) == 0 or messages[id].embeds[0].fields[0].value is None:
-    #     return -1
-    #
-    # emb = messages[id].embeds[0]
-    # old_title = str(emb.fields[0].name)
-    # old_content = str(emb.fields[0].value).split('\n')
-    #
-    # new_content = list(old_content[index])
-    # new_content[0] = value
-    # old_content[index] = ''.join(new_content)
-    # emb.clear_fields()
-    #
-    # emb.add_field(name=old_title, value='\n'.join(old_content))
-    #
-    #
-    # messages[id] = await messages[id].edit(embed=emb)
-    #
-    # return 0
-
 
 async def edit(id, title:str, body:dict[str,str]={}, color=discord.Color.from_rgb(255, 166, 201)):
     if id in messages:
@@ -283,16 +249,4 @@ class reactions:
     right_arrow = '➡️'
     
 
-# async def edit_title(id, title):
-#     if not id in messages or len(messages[id].embeds) == 0:
-#         return -1
-#     
-#     old_emb = messages[id].embeds[0]
-#     emb = discord.Embed(title=title, color=old_emb.color)
-#     for i in old_emb.fields:
-#         emb.add_field(name=i.name, value=i.value)
-#
-#     messages[id] = await messages[id].edit(embed=emb)
-#
-#
 

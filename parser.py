@@ -64,8 +64,6 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.fyou)
             return
 
-        # emb = await dc.send(loc.now_playing + "хуй пойми шо", message.channel) # TODO: change
-        # msg = await dc.add_status(emb, loc.queue, inst.queue)
         content = [[inst.queue.index(i), i.title] for i in inst.queue]
         emb = await dc.send_long(loc.queue, loc.now_playing + '...', content, message.channel)
         inst.queue_messages.append(emb)
@@ -88,7 +86,6 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.cross)
 
     elif args[0] in ['test']:
-        # await dc.send_long("asd", "asd", [(str(i), "dshfgkjsgkjahgskjdhgfkajshdgfkjshgdkjfhgsakjdhfgksjdhfgksajdhfgkj") for i in range(100)], message.channel)
         await dc.send_long('asd', 'asd', [['asd', 'asd']], message.channel)
         
 

@@ -25,7 +25,6 @@ class Instance:
         max_messages = 5
         if len(self.queue_messages) > max_messages:
             while True:
-                # self.queue_messages.pop(list(self.queue_messages.items())[0][0])
                 self.queue_messages.pop(0)
                 if len(self.queue_messages) <= max_messages:
                     break

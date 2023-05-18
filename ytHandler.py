@@ -1,8 +1,6 @@
 import yt_dlp as yt
-# import json
 import dcHandler as dc
 import bot_locale as loc
-# from datetime import datetime
 import re, os
 
 options = {
