@@ -40,7 +40,7 @@ async def play_playlist(message, name, inst) -> int:
         for song in playlist:
             ind = list(playlist).index(song)
             # first try the links
-            await dc.edit_long_status(emb, ind, '>')
+            # await dc.edit_long_status(emb, ind, '>')
             if await yt.play_link(message, playlist[song], inst, silent=True) == 0:
                 await dc.edit_long_status(emb, ind, str(inst.queue.len()))
                 song_available = True
