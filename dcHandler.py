@@ -2,6 +2,7 @@ import discord
 import bot_locale as loc
 
 # TODO: 
+# theres a lot of returns that only return 0 maybe add some checks or smth
 
 class LongMessage:
     def __init__(self, title:str, smaller_title:str, content:list[list[str]], page=0):
@@ -11,6 +12,7 @@ class LongMessage:
         self.smaller_title = smaller_title
         self.content = content
         self.isMultipage = False
+        self.hasReactions = False #TODO: there must be a way to avoid this
 
         self.message:discord.Message
 
@@ -70,13 +72,17 @@ class LongMessage:
 
     async def send(self, channel:discord.TextChannel, color=discord.Color.from_rgb(255, 166, 201)):
         self.message = await channel.send(embed=self.genEmbed(color=color))
-        if self.isMultipage:
-            await self.message.add_reaction(reactions.left_arrow)
-            await self.message.add_reaction(reactions.right_arrow)
+        await self.refreshReactions()
+        # if self.isMultipage:
+        #     await self.message.add_reaction(reactions.left_arrow)
+        #     await self.message.add_reaction(reactions.right_arrow)
 
     async def parse_reaction(self, reaction):
+        if not reaction == reactions.left_arrow and not reaction == reactions.right_arrow:
+            return -2
         if not self.isMultipage:
             return 1
+
         changed = False
         if reaction == reactions.left_arrow:
             if not self.page < 1:
@@ -97,10 +103,29 @@ class LongMessage:
             await self.message.edit(embed=self.genEmbed())
             return 0
         return -1
+
+    async def refreshReactions(self):
+        if self.isMultipage and not self.hasReactions:
+            await self.message.clear_reaction(reactions.right_arrow)
+            await self.message.clear_reaction(reactions.left_arrow)
+            await self.message.add_reaction(reactions.left_arrow)
+            await self.message.add_reaction(reactions.right_arrow)
+            self.hasReactions = True
+
+        if not self.isMultipage and self.hasReactions:
+            await self.message.clear_reaction(reactions.right_arrow)
+            await self.message.clear_reaction(reactions.left_arrow)
+            self.hasReactions = False
         
-    def setContent(self, content:list[list[str]]):
+    async def setContent(self, content:list[list[str]]):
         self.content = content
         self.regenerate()
+        await self.message.edit(embed=self.genEmbed())
+        await self.refreshReactions()
+
+
+
+        return 0
 
 
         
@@ -142,7 +167,11 @@ async def send_long(title:str, smaller_title:str, content:list[list[str]], chann
     # return message.id
 
 async def edit_long_status(id, index:int, value:str) -> int:
-    await long_messages[id].edit(index, status=value)
+    await long_messages[id].edit(index, status=value) # TODO: this could be better some day
+    return 0
+
+async def edit_long_content(id, content:list[list]) -> int:
+    await long_messages[id].setContent(content)
     return 0
     # if not id in messages or len(messages[id].embeds) == 0 or len(messages[id].embeds[0].fields) == 0 or messages[id].embeds[0].fields[0].value is None:
     #     return -1

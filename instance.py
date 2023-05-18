@@ -8,7 +8,7 @@ class Instance:
         self.guildid:int = gid
         self.prefix:str = prefix
         self.queue = Queue()
-        self.queue_messages = {}
+        self.queue_messages:list[int] = []
         self.skipSkip = False
         self.song_start_time = datetime.now()
         self.pause_time = datetime.now()
@@ -25,12 +25,15 @@ class Instance:
         max_messages = 5
         if len(self.queue_messages) > max_messages:
             while True:
-                self.queue_messages.pop(list(self.queue_messages.items())[0][0])
+                # self.queue_messages.pop(list(self.queue_messages.items())[0][0])
+                self.queue_messages.pop(0)
                 if len(self.queue_messages) <= max_messages:
                     break
-        
+
+        # update queue messages
         for i in self.queue_messages:
-            await dc.edit_status(i, self.queue_messages[i], self.queue)
+            # await dc.edit_status(i, self.queue_messages[i], self.queue)
+            await dc.edit_long_content(i, [[self.queue.index(i), i.title] for i in self.queue])
 
     def after_song(self, error):
         if error:

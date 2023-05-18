@@ -10,7 +10,7 @@ class Queue:
     def __init__(self):
         self.q:list[Song] = []
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> Song:
         return self.q[key]
     
     def append(self, link, title):
@@ -26,6 +26,9 @@ class Queue:
 
         self.q.pop(index - 1)
         return True
+
+    def index(self, elem):
+        self.q.index(elem)
             
 
     def len(self):

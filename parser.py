@@ -64,10 +64,11 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.fyou)
             return
 
-        emb = await dc.send(loc.now_playing + "хуй пойми шо", message.channel) # TODO: change
-        msg = await dc.add_status(emb, loc.queue, inst.queue)
-        inst.queue_messages[emb] = msg
-
+        # emb = await dc.send(loc.now_playing + "хуй пойми шо", message.channel) # TODO: change
+        # msg = await dc.add_status(emb, loc.queue, inst.queue)
+        content = [[inst.queue.index(i), i.title] for i in inst.queue]
+        emb = await dc.send_long(loc.queue, loc.now_playing + '...', content, message.channel)
+        inst.queue_messages.append(emb)
 
     elif args[0] in ['save', 'ss']:
         await lpl.save_playlist(message, args[1], inst)
