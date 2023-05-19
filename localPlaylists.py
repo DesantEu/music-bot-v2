@@ -92,4 +92,29 @@ async def save_playlist(message, name, inst):
         await dc.add_status(emb, dc.reactions.thumbs_up, dc.reactions.cold)
     except:
         await dc.add_status(emb, dc.reactions.cross, dc.reactions.hot)
-        
+
+
+async def list_playlists(message, name):
+    path = 'playlists'
+    filepath = f'playlists/{name}.lpl'
+    # list all files
+    if name == '':
+        files = [f[:-4] for f in os.listdir(path) if f.endswith('.lpl')]
+        await dc.send_long(loc.playlists, '', [['>', i] for i in files], message.channel)
+    # list specific playlist
+    else:
+        # if doesnt exist
+        if not os.path.exists(filepath):
+            await dc.send(loc.playlist_not_found, message.channel)
+            return -1
+        # if does exist
+        else:
+            with open(filepath, 'r', encoding='utf-8') as file:
+                try:
+                    playlist:dict = json.loads(file.read())
+                except:
+                    await dc.send(loc.playlist_broken, message.channel)
+                    return -1
+
+            await dc.send_long(loc.playlist_content, name, [['>', i] for i in playlist], message.channel)
+                # await dc.send_long(str(songs), message.channel, title=f'Плейлист {name}:')

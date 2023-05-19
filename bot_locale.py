@@ -21,6 +21,8 @@ playlist_waiting = 'Ща'
 playlist_success = 'Загружен'
 playlist_saving = 'Сохраняю плейлист '
 playlist_rewrite = 'Изменяю плейлист '
+playlists = 'Список плейлистов:'
+playlist_content = 'Треки в плейлисте'
 
 queue = 'Очередь:'
 now_playing = 'Сейчас играет: '

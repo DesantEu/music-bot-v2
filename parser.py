@@ -73,6 +73,9 @@ async def parse(message:discord.Message, inst:Instance):
 
     elif args[0] in ['pp']:
         await lpl.play_playlist(message, args[1], inst)
+
+    elif args[0] in ['pl']:
+        await lpl.list_playlists(message, args[1])
     
 
     elif args[0] in ['join']:
