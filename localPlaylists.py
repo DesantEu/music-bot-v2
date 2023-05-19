@@ -105,7 +105,7 @@ async def list_playlists(message, name):
     else:
         # if doesnt exist
         if not os.path.exists(filepath):
-            await dc.send(loc.playlist_not_found, message.channel)
+            await message.add_reaction(dc.reactions.cross)
             return -1
         # if does exist
         else:
