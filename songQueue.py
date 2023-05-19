@@ -43,6 +43,9 @@ class Queue:
     def toStrWithCurrent(self, current) -> str:
         return '\n'.join([f"{'> ' if current == self.q.index(i) else '  '}" + f'{self.q.index(i) + 1}. ' + i.title for i in self.q])
 
+    def toContent(self):
+        return [[f'{self.q.index(i) + 1}. ', i.title] for i in self.q]
+
     def toJsonStr(self) -> str:
         rJson = {}
         for i in self.q:

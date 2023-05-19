@@ -3,6 +3,7 @@ from instance import Instance
 import player
 import localPlaylists as lpl
 import bot_locale as loc
+import nowPlaying as np
 
 import dcHandler as dc
 
@@ -64,7 +65,7 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.fyou)
             return
 
-        content = [[inst.queue.index(i), i.title] for i in inst.queue]
+        content = inst.queue.toContent()
         emb = await dc.send_long(loc.queue, loc.now_playing + '...', content, message.channel)
         inst.queue_messages.append(emb)
 
