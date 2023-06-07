@@ -3,7 +3,7 @@ from instance import Instance
 import player
 import localPlaylists as lpl
 import bot_locale as loc
-import nowPlaying as np
+# import nowPlaying as np
 
 import dcHandler as dc
 
