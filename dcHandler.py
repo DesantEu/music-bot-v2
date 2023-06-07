@@ -187,8 +187,29 @@ async def edit_status(id, ind, value) -> int:
 
     name = messages[id].embeds[0].fields[ind].name
 
-    # emb = messages[id].embeds[0].remove_field(ind).insert_field_at(ind, name=name, value=value)
     emb = messages[id].embeds[0].set_field_at(ind, name=name, value=value)
+    messages[id] = await messages[id].edit(embed=emb)
+    return 0
+
+
+async def edit_status_title(id, ind, name) -> int:
+    if not id in messages or len(messages[id].embeds) == 0 or ind > len(messages[id].embeds[0].fields) - 1:
+        return -1
+
+    value = messages[id].embeds[0].fields[ind].value
+
+    emb = messages[id].embeds[0].set_field_at(ind, name=name, value=value)
+    messages[id] = await messages[id].edit(embed=emb)
+    return 0
+
+
+async def set_footer(id, value) -> int:
+    if id in long_messages:
+        return -1
+    if not id in messages or len(messages[id].embeds) == 0:
+        return -1
+
+    emb = messages[id].embeds[0].set_footer(text=value)
     messages[id] = await messages[id].edit(embed=emb)
     return 0
 
@@ -247,6 +268,7 @@ class reactions:
 
     left_arrow = '⬅️'
     right_arrow = '➡️'
+    play = '▶️'
     
 
 

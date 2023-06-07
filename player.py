@@ -120,3 +120,26 @@ def play_from_queue(index, inst):
     inst.current = index
     resume(inst)
 
+
+async def handle_reaction(reaction, inst) -> int:
+    # instaplay
+    if reaction.emoji == dc.reactions.play:
+        # check if we have the message in question
+        is_insta = False
+        index = ''
+        for i in inst.queue:
+            if i.instaplay_message == reaction.message.id:
+                is_insta = True
+                index = inst.queue.index(i)
+                # exit function with error if the index is wrong
+                if index == -1 or index is None:
+                    return 1
+                break
+
+        if is_insta and inst.queue[index].can_instaplay:
+            inst.queue[index].can_instaplay = False
+            return skip(inst, str(int(index) + 1))
+
+    return -1
+
+

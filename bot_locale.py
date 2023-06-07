@@ -27,6 +27,7 @@ playlist_content = 'Треки в плейлисте'
 queue = 'Очередь:'
 now_playing = 'Сейчас играет: '
 page = 'Страница'
+song_number = 'Номер '
 
 not_available = 'Пока не могу('
 sorry = 'Сори но у тебя дед сдох'

@@ -48,22 +48,18 @@ async def play_link(message, link, inst, silent=False) -> int:
         # start downloading
         if not silent: await dc.edit_status(emb, st, loc.downloading)
         dl = await download(link, filename)
-        
+        # donwload success
         if dl == 0:
-            if not silent: await dc.edit_status(emb, st, loc.search_local_success)
-            inst.queue.append(link, title)
-            await inst.update_queue()
-            return 0
+            return await on_search_success(message, inst, emb, title, link, st, silent)
+
+        # download fail
         else:
             if not silent: await dc.edit_status(emb, st, loc.download_fail)
             return -1
 
     # local search success
     else:
-        if not silent: await dc.edit_status(emb, st, loc.search_local_success)
-        inst.queue.append(link, title)
-        await inst.update_queue()
-        return 0
+        return await on_search_success(message, inst, emb, title, link, st, silent)
 
 async def play_prompt(message, prompt, inst, silent=False):
     return await play_link(message, f'ytsearch1:{prompt}', inst, silent)
@@ -86,3 +82,16 @@ async def download(link, filename):
 
     return 0
 
+async def on_search_success(message, inst, emb, title, link, st, silent) -> int:
+    if not silent:
+        await dc.edit_status(emb, st, loc.search_local_success)
+        # add instaplay reaction
+        if inst.queue.len() > 0:
+            msg = await message.channel.fetch_message(emb)
+            await msg.add_reaction(dc.reactions.play)
+
+    inst.queue.append(link, title, emb)
+    if not silent: 
+        await dc.edit_status_title(emb, st, f"{inst.queue.index_title(title) + 1}. {title}")
+    await inst.update_queue()
+    return 0
