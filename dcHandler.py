@@ -4,6 +4,9 @@ import bot_locale as loc
 # TODO: 
 # theres a lot of returns that only return 0 maybe add some checks or smth
 
+color_pink = discord.Colour.from_rgb(226, 195, 205)
+# color_pink_old = discord.Color.from_rgb(255, 166, 201)
+
 class LongMessage:
     def __init__(self, title:str, smaller_title:str, content:list[list[str]], page=0):
         self.page:int = page
@@ -48,7 +51,7 @@ class LongMessage:
 
             self.isMultipage = False
 
-    def genEmbed(self, color=discord.Color.from_rgb(255, 166, 201)):
+    def genEmbed(self, color=color_pink):
         emb = discord.Embed(title=self.title)
         emb.color = color
         emb.add_field(name=self.smaller_title, value=self.pages[self.page])
@@ -70,7 +73,7 @@ class LongMessage:
         await self.message.edit(embed=self.genEmbed());
 
 
-    async def send(self, channel:discord.TextChannel, color=discord.Color.from_rgb(255, 166, 201)):
+    async def send(self, channel:discord.TextChannel, color=color_pink):
         self.message = await channel.send(embed=self.genEmbed(color=color))
         await self.refreshReactions()
 
@@ -132,7 +135,7 @@ class LongMessage:
 messages:dict[int, discord.Message] = {}
 long_messages:dict[int, LongMessage] = {}
 
-async def send(msg:str, channel, color=discord.Color.from_rgb(255, 166, 201)):
+async def send(msg:str, channel, color=color_pink):
     if msg == '':
         emb = discord.Embed()
     else:
@@ -142,7 +145,7 @@ async def send(msg:str, channel, color=discord.Color.from_rgb(255, 166, 201)):
     messages[message.id] = message
     return message.id
 
-async def send_long(title:str, smaller_title:str, content:list[list[str]], channel, color=discord.Color.from_rgb(255, 166, 201)):
+async def send_long(title:str, smaller_title:str, content:list[list[str]], channel, color=color_pink):
     global long_messages
 
     msg = LongMessage(title, smaller_title, content)
@@ -159,7 +162,7 @@ async def edit_long_content(id, content:list[list]) -> int:
     await long_messages[id].setContent(content)
     return 0
 
-async def edit(id, title:str, body:dict[str,str]={}, color=discord.Color.from_rgb(255, 166, 201)):
+async def edit(id, title:str, body:dict[str,str]={}, color=color_pink):
     if id in messages:
         emb = discord.Embed(title=title)
         if not body == {}:
