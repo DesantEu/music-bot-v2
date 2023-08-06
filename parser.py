@@ -3,7 +3,7 @@ from instance import Instance
 import player
 import localPlaylists as lpl
 import bot_locale as loc
-import nowPlaying as np
+# import nowPlaying as np
 
 import dcHandler as dc
 
@@ -87,8 +87,8 @@ async def parse(message:discord.Message, inst:Instance):
         emb = await dc.send_long(loc.queue, loc.now_playing + '...', content, message.channel)
         inst.queue_messages.append(emb)
 
-    elif args[0] in ['np']:
-        await np.send_np(message.channel, inst)
+    # elif args[0] in ['np']:
+    #     await np.send_np(message.channel, inst)
 
     elif args[0] in ['save', 'ss']:
         await lpl.save_playlist(message, args[1], inst)
@@ -139,6 +139,7 @@ async def parse(message:discord.Message, inst:Instance):
 
     elif args[0] in ['test']:
         await dc.send_long('asd', 'asd', [['asd', 'asd']], message.channel)
+        await inst.bot.change_presence(activity=discord.Game(name='//help'))
         
 
     #

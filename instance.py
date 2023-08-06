@@ -3,12 +3,16 @@ import discord
 from songQueue import Queue
 import player
 import dcHandler as dc
+import nowPlaying as np
+
 class Instance:
-    def __init__(self, gid:int, prefix:str):
-        self.guildid:int = gid
-        self.prefix:str = prefix
+    def __init__(self, gid:int, prefix:str, bot:discord.Client):
+        self.guildid: int = gid
+        self.prefix: str = prefix
         self.queue = Queue()
-        self.queue_messages:list[int] = []
+        self.queue_messages: list[int] = []
+        # self.player: np.Player
+        # self.hasPlayer = False
         self.skipSkip = False
         self.song_start_time = datetime.now()
         self.pause_time = datetime.now()
@@ -18,7 +22,8 @@ class Instance:
         self.isPlaying = False
         self.isStopped = True
         self.isPaused = False
-        self.vc:discord.VoiceClient
+        self.vc: discord.VoiceClient
+        self.bot = bot
 
     async def update_queue(self):
         # delete old queue messages
