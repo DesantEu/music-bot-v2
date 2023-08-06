@@ -61,12 +61,19 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.fyou)
             return
 
-        res = inst.queue.pop(args[1])
-        if not res == '':
-            past.add_rmlist(inst, res)
-            await inst.update_queue()
-            if inst.queue.len() == 0:
-                player.stop(inst)
+        removes = args[1].split(' ')
+        success = False
+
+        for i in removes:
+            res = inst.queue.pop(i)
+            if not res == '':
+                past.add_rmlist(inst, res)
+                await inst.update_queue()
+                if inst.queue.len() == 0:
+                    player.stop(inst)
+                success = True
+
+        if success:
             await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
