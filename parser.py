@@ -3,7 +3,7 @@ from instance import Instance
 import player
 import localPlaylists as lpl
 import bot_locale as loc
-# import nowPlaying as np
+import nowPlaying as np
 
 import dcHandler as dc
 
@@ -24,6 +24,24 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.fyou)
             return
         if player.skip(inst, num=args[1]) == 0:
+            await message.add_reaction(dc.reactions.check)
+        else:
+            await message.add_reaction(dc.reactions.cross)
+
+    elif args[0] in ['next', 'n']:
+        if not inst.hasVC():
+            await message.add_reaction(dc.reactions.fyou)
+            return
+        if player.skip(inst, num='') == 0:
+            await message.add_reaction(dc.reactions.check)
+        else:
+            await message.add_reaction(dc.reactions.cross)
+
+    elif args[0] in ['back', 'b']:
+        if not inst.hasVC():
+            await message.add_reaction(dc.reactions.fyou)
+            return
+        if player.skip(inst, num=str(inst.queue.len()-1)) == 0:
             await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
@@ -49,7 +67,7 @@ async def parse(message:discord.Message, inst:Instance):
         else:
             await message.add_reaction(dc.reactions.cross)
 
-    elif args[0] in ['cc', 'clear']:
+    elif args[0] in ['cc', 'clear', 'clean']:
         if not inst.hasVC() or inst.queue.len() == 0:
             await message.add_reaction(dc.reactions.fyou)
             return
@@ -68,6 +86,9 @@ async def parse(message:discord.Message, inst:Instance):
         content = inst.queue.toContent()
         emb = await dc.send_long(loc.queue, loc.now_playing + '...', content, message.channel)
         inst.queue_messages.append(emb)
+
+    elif args[0] in ['np']:
+        await np.send_np(message.channel, inst)
 
     elif args[0] in ['save', 'ss']:
         await lpl.save_playlist(message, args[1], inst)
@@ -88,6 +109,33 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
+
+    elif args[0] in ['fix']:
+        # check if we in vc
+        print("fixing...")
+        g = message.guild
+        if not g is None:
+            print("found guild")
+            mem = g.get_member_named("Thwew#0618")
+            if not mem is None:
+                print("found bot user")
+                if not mem.voice is None:
+                    print("found voice")
+                    await dc.leave(inst)
+                    await dc.join(message, inst)
+                    await message.add_reaction(dc.reactions.check)
+
+        # if not disconnect
+                else:
+                    print("voice not found, leaving")
+                    if player.stop(inst) and await dc.leave(inst) == 0:
+                        await message.add_reaction(dc.reactions.wave)
+                    else:
+                        await message.add_reaction(dc.reactions.cross)
+
+                    
+
+        # if yes reset socket
 
     elif args[0] in ['test']:
         await dc.send_long('asd', 'asd', [['asd', 'asd']], message.channel)
@@ -175,11 +223,11 @@ async def parse(message:discord.Message, inst:Instance):
 #         bot.admin_only = not bot.admin_only
 #         await msender.send(f'Админ онли: {bot.admin_only}', message.channel)
 #
-#     elif args[0] == 'help':
-#         await help(bot, chan, admin=True)
+    elif args[0] == 'help':
+        await help(message.channel)
 #
 
-async def help(bot, chan, admin=False):
+async def help(chan, admin=False):
     commands = []
     descriptions = []
     if admin:
@@ -189,12 +237,16 @@ async def help(bot, chan, admin=False):
 
     with open(path, 'r', encoding="utf-8") as file:
         for i in file.readlines():
+            if i.startswith("#"):
+                continue
             temp = i.split(" - ")
             commands.append(temp[0])
             descriptions.append(temp[1])
     emb = discord.Embed()
-    emb.color = discord.Color.orange()
-    prefix = bot.prefix if not admin else bot.admin_prefix
+    # emb.color = discord.Color.green()
+    emb.color = discord.Color.from_rgb(252, 108, 133)
+    # prefix = bot.prefix if not admin else bot.admin_prefix
+    prefix = '//'
     for i in range(len(commands)):
         emb.add_field(
             name=prefix + f' {prefix}'.join(commands[i].split(", ")), value=descriptions[i], inline=False)
