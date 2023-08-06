@@ -6,6 +6,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.voice_states = True
 intents.reactions = True
+intents.members = True
 
 
 client = discord.Client(intents=intents)
@@ -14,6 +15,7 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print(f'We have logged in as {client.user}')
+    await client.change_presence(activity=discord.Game(name='//help'))
 
 @client.event
 async def on_message(message):
@@ -23,7 +25,7 @@ async def on_message(message):
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
 
-    await handler.handle(message)
+    await handler.handle(message, client)
 
 @client.event
 async def on_voice_state_update(member, before, after):

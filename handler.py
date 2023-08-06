@@ -19,7 +19,7 @@ admins = ['Desant#0148']
 instances:dict[int, Instance] = {}
 
 
-async def handle(message:discord.Message):
+async def handle(message:discord.Message, bot: discord.Client):
     # PM handler
     if not message.guild:
         await message.channel.send(loc.pm_reply)
@@ -28,7 +28,7 @@ async def handle(message:discord.Message):
     # add new instance if needed
     gid = message.guild.id
     if not gid in instances.keys():
-        instances[gid] = Instance(gid, prefix)
+        instances[gid] = Instance(gid, prefix, bot)
 
     # parse regular commands
     if message.content.startswith(prefix):
