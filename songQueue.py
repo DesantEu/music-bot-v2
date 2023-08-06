@@ -18,16 +18,16 @@ class Queue:
     def append(self, link, title, instaplay_message=''):
         self.q.append(Song(link, title, instaplay_message))
 
-    def pop(self, index):
+    def pop(self, index) -> str:
         if index.startswith('-') or not index.isdigit() or self.len() == 0 or index == '':
-            return False
+            return ''
 
         index = int(index)
         if index < 1 or index > self.len():
-            return False
+            return ''
 
-        self.q.pop(index - 1)
-        return True
+        song = self.q.pop(index - 1).title
+        return song
 
     def index(self, elem) -> int:
         return self.q.index(elem)

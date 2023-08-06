@@ -29,6 +29,9 @@ now_playing = 'Сейчас играет: '
 page = 'Страница'
 song_number = 'Номер '
 
+rmlist_title = 'Шо ты проказник'
+rmlist_smaller_title = 'Вот треки которые удалили:'
+
 not_available = 'Пока не могу('
 sorry = 'Сори но у тебя дед сдох'
 no_vc = 'Зайди в вч'

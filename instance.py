@@ -3,7 +3,7 @@ import discord
 from songQueue import Queue
 import player
 import dcHandler as dc
-import nowPlaying as np
+# import nowPlaying as np
 
 class Instance:
     def __init__(self, gid:int, prefix:str, bot:discord.Client):
@@ -24,6 +24,8 @@ class Instance:
         self.isPaused = False
         self.vc: discord.VoiceClient
         self.bot = bot
+        self.rmlist: list[str] = []
+
 
     async def update_queue(self):
         # delete old queue messages
@@ -37,7 +39,7 @@ class Instance:
         # update queue messages
         for i in self.queue_messages:
             # await dc.edit_status(i, self.queue_messages[i], self.queue)
-            await dc.edit_long_content(i, [[self.queue.index(i), i.title] for i in self.queue])
+            await dc.edit_long_content(i, [[f'{self.queue.index(i) + 1}. ', i.title] for i in self.queue])
 
     def after_song(self, error):
         if error:

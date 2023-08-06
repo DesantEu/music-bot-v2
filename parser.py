@@ -3,6 +3,7 @@ from instance import Instance
 import player
 import localPlaylists as lpl
 import bot_locale as loc
+import pastQ as past
 # import nowPlaying as np
 
 import dcHandler as dc
@@ -59,13 +60,19 @@ async def parse(message:discord.Message, inst:Instance):
         if inst.queue.len() == 0 or not inst.hasVC():
             await message.add_reaction(dc.reactions.fyou)
             return
-        if inst.queue.pop(args[1]):
+
+        res = inst.queue.pop(args[1])
+        if not res == '':
+            past.add_rmlist(inst, res)
             await inst.update_queue()
             if inst.queue.len() == 0:
                 player.stop(inst)
             await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
+
+    elif args[0] in ['rmlist']:
+        await past.send_rmlist(inst, message)
 
     elif args[0] in ['cc', 'clear', 'clean']:
         if not inst.hasVC() or inst.queue.len() == 0:
