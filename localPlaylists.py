@@ -41,13 +41,13 @@ async def play_playlist(message, name, inst) -> int:
             ind = list(playlist).index(song)
             # first try the links
             if await yt.play_link(message, playlist[song], inst, silent=True) == 0:
-                await dc.edit_long_status(emb, ind, str(inst.queue.len()))
+                await dc.edit_long_status(emb, ind, f'{inst.queue.len()}.  ')
                 song_available = True
             # if the link fails try to find by name
             else:
                 await dc.edit_long_status(emb, ind, 'V')
                 if await yt.play_prompt(message, song, inst, silent=True) == 0:
-                    await dc.edit_long_status(emb, ind, str(inst.queue.len()))
+                    await dc.edit_long_status(emb, ind, f'{inst.queue.len()}.  ')
                     song_available = True
                 # if everything fails theres nothing we can do really
                 else:
