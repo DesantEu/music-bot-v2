@@ -162,6 +162,10 @@ async def edit_long_text(id, index: int, value: str) -> int:
     await long_messages[id].edit(index, text=value)
     return 0
 
+async def edit_long_both(id, index: int, status: str, text: str) -> int:
+    await long_messages[id].edit(index, status=status, text=text)
+    return 0
+
 async def edit_long_content(id, content:list[list]) -> int:
     await long_messages[id].setContent(content)
     return 0

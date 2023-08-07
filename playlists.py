@@ -17,14 +17,12 @@ async def play_bulk(prompts: list[str], inst, message):
         # handle words
         if not 'https://' in pr:
             if await yt.play_prompt(message, pr, inst, silent=True) == 0:
-                await dc.edit_long_status(emb, ind, f'{inst.queue.len()}.  ')
-                await dc.edit_long_text(emb, ind, inst.queue[inst.queue.len()-1].title)
+                await dc.edit_long_both(emb, ind, f'{inst.queue.len()}.  ', inst.queue[inst.queue.len()-1].title)
                 song_available = True
         # handle links
         else:
             if await yt.play_link(message, pr, inst, silent=True) == 0:
-                await dc.edit_long_status(emb, ind, f'{inst.queue.len()}.  ')
-                await dc.edit_long_text(emb, ind, inst.queue[inst.queue.len()-1].title)
+                await dc.edit_long_both(emb, ind, f'{inst.queue.len()}.  ', inst.queue[inst.queue.len()-1].title)
                 song_available = True
 
 
