@@ -24,6 +24,9 @@ playlist_rewrite = 'Изменяю плейлист '
 playlists = 'Список плейлистов:'
 playlist_content = 'Треки в плейлисте'
 
+bulk_title = 'asd'
+bulk_smaller_title = 'Включаю вот это вот все:'
+
 queue = 'Очередь:'
 now_playing = 'Сейчас играет: '
 page = 'Страница'
@@ -31,6 +34,7 @@ song_number = 'Номер '
 
 rmlist_title = 'Шо ты проказник'
 rmlist_smaller_title = 'Вот треки которые удалили:'
+qq_smaller_title = 'Вот что играло раньше:'
 
 not_available = 'Пока не могу('
 sorry = 'Сори но у тебя дед сдох'

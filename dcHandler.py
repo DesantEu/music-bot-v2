@@ -66,7 +66,7 @@ class LongMessage:
             self.content[ind][0] = status
 
         if not text == '':
-            self.content[ind][0] = text
+            self.content[ind][1] = text
 
         self.regenerate()
 
@@ -156,6 +156,10 @@ async def send_long(title:str, smaller_title:str, content:list[list[str]], chann
 
 async def edit_long_status(id, index:int, value:str) -> int:
     await long_messages[id].edit(index, status=value) # TODO: this could be better some day
+    return 0
+
+async def edit_long_text(id, index: int, value: str) -> int:
+    await long_messages[id].edit(index, text=value)
     return 0
 
 async def edit_long_content(id, content:list[list]) -> int:
