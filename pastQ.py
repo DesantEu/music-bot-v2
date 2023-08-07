@@ -21,7 +21,7 @@ async def send_rmlist(inst, message: discord.Message):
     await dc.send_long(loc.rmlist_title, loc.rmlist_smaller_title, content, message.channel)
 
 def add_past_queue(inst):
-    if len(inst.queue) == 0:
+    if inst.queue.len() == 0:
         return
 
     inst.past_queues.append(inst.queue.copy())
