@@ -10,7 +10,7 @@ class Song:
     
 class Queue:
     def __init__(self):
-        self.q:list[Song] = []
+        self.q: list[Song] = []
 
     def __getitem__(self, key) -> Song:
         return self.q[key]
@@ -44,6 +44,12 @@ class Queue:
 
     def clear(self):
         self.q = []
+
+    def copy(self):
+        q = Queue()
+        for i in self.q.copy():
+            q.append(i.link, i.title)
+        return q
 
     def __str__(self) -> str:
         return '\n'.join([f'{self.q.index(i) + 1}. ' + i.title for i in self.q])
