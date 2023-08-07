@@ -68,18 +68,102 @@ async def parse(message:discord.Message, inst:Instance):
 
         removes = args[1].split(' ')
         success = False
+        warns = 0
+        max = inst.queue.len()
+
+        # do unreasonable transformations so you can bulk remove better
+        # get deletion indeces from whatever garbage the user gives
+        indeces = []
 
         for i in removes:
-            res = inst.queue.pop(i)
+            # ignore negatives from spawn
+            if i.startswith('-'):
+                continue
+
+            # handle ranges
+            if '-' in i:
+                start = -1
+                end = -1
+
+                splits = i.split('-')
+
+                # safety measures
+                # idk how that could happen but anyway
+                if len(splits) == 1:
+                    warns += 1
+                    continue
+                # only pick (1-25)-123
+                elif len(splits) > 2:
+                    warns += 1
+                try:
+                    start = int(splits[0])
+                    end = int(splits[1])
+                    if end > max:
+                        end = max
+                        warns += 1
+                # if letters are thrown in the sequence
+                except:
+                    warns += 1
+                    continue
+
+                # yea this would happen somehow
+                if end < start:
+                    warns += 1
+                    continue
+
+                for ind in range(start, end+1):
+                    if ind > max:
+                        warns += 1
+                        continue
+
+                    if not ind in indeces:
+                        indeces.append(ind)
+
+            # handle single numbers
+            else:
+                # parse int of course
+                try:
+                    ind = int(i)
+                    if ind > max:
+                        warns += 1
+                        continue
+
+                    if not i in indeces:
+                        indeces.append(ind)
+                # letters detected here
+                except:
+                    warns += 1
+                    continue
+
+        print('warns: ' + str(warns))
+
+        # my honest reaction:
+        if warns >= 3:
+            print('reaction triggered')
+            await message.channel.send(loc.warn_reaction)
+
+
+
+        # reverse and delete from end cuz indeces change and shit
+        indeces = sorted(indeces, reverse=True)
+
+        for i in indeces:
+            res = inst.queue.pop(str(i))
             if not res == '':
                 past.add_rmlist(inst, res)
-                await inst.update_queue()
+                # await inst.update_queue()
                 if inst.queue.len() == 0:
                     player.stop(inst)
                 success = True
 
+        await inst.update_queue()
+
+
         if success:
-            await message.add_reaction(dc.reactions.check)
+            if warns > 0:
+                await message.add_reaction(dc.reactions.warn)
+            else:
+                await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
 

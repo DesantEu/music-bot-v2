@@ -257,6 +257,7 @@ async def leave(inst) -> int:
 class reactions:
     check = '✅'
     cross = '❌'
+    warn = '⚠️'
     fyou = '🖕'
     wave = '👋'
     thumbs_up = '👍'
