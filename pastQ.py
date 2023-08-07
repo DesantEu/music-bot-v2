@@ -43,4 +43,4 @@ async def send_past_queues(inst, message: discord.Message):
 
 
 async def play_past_queue(index: int, inst, message: discord.Message):
-    await playlists.play_bulk([i.link for i in inst.past_queues[index]], inst, message)
+    await playlists.play_bulk([i.title for i in inst.past_queues[index]], inst, message)
