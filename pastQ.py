@@ -1,14 +1,14 @@
 import discord
 import bot_locale as loc
 import dcHandler as dc
-import instance
+import playlists
 
-def add_rmlist(inst: instance.Instance, song_name: str):
+def add_rmlist(inst, song_name: str):
     inst.rmlist.append(song_name)
     if len(inst.rmlist) > 50:
         inst.rmlist.pop(0)
 
-async def send_rmlist(inst: instance.Instance, message: discord.Message):
+async def send_rmlist(inst, message: discord.Message):
     if len(inst.rmlist) == 0:
         await message.add_reaction(dc.reactions.fyou)
         return
@@ -20,9 +20,27 @@ async def send_rmlist(inst: instance.Instance, message: discord.Message):
     
     await dc.send_long(loc.rmlist_title, loc.rmlist_smaller_title, content, message.channel)
 
+def add_past_queue(inst):
+    if len(inst.queue) == 0:
+        return
 
-async def send_past_queues():
-    pass
+    inst.past_queues.append(inst.queue.copy())
+    if len(inst.past_queues) > 10:
+        inst.past_queues.pop(0)
 
-async def play_past_queue():
-    pass
+async def send_past_queues(inst, message: discord.Message):
+    if len(inst.past_queues) == 0:
+        await message.add_reaction(dc.reactions.fyou)
+        return
+
+    content = []
+    for i in range(len(inst.past_queues)):
+        content.append([f'{i+1}. ', ' '])
+        for j in inst.past_queues[i]:
+            content.append(['> ', j.title])
+
+    await dc.send_long(loc.rmlist_title, loc.qq_smaller_title, content, message.channel)
+
+
+async def play_past_queue(index: int, inst, message: discord.Message):
+    await playlists.play_bulk([i.link for i in inst.past_queues[index]], inst, message)

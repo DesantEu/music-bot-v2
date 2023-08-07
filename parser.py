@@ -4,6 +4,7 @@ import player
 import localPlaylists as lpl
 import bot_locale as loc
 import pastQ as past
+import playlists
 # import nowPlaying as np
 
 import dcHandler as dc
@@ -18,7 +19,11 @@ async def parse(message:discord.Message, inst:Instance):
         args.append('')
 
     if args[0] in ['p', 'play']:
-        await player.play(message, args[1], inst)
+        prompts = args[1].split('\n')
+        if len(prompts) > 1:
+            await playlists.play_bulk(prompts, inst, message)
+        else:
+            await player.play(message, args[1], inst)
 
     elif args[0] in ['s', 'skip']:
         if not inst.hasVC():
@@ -100,6 +105,26 @@ async def parse(message:discord.Message, inst:Instance):
         content = inst.queue.toContent()
         emb = await dc.send_long(loc.queue, loc.now_playing + '...', content, message.channel)
         inst.queue_messages.append(emb)
+
+    elif args[0] in ['qq']:
+        if len(inst.past_queues) == 0:
+            await message.add_reaction(dc.reactions.fyou)
+            return
+
+        if args[1] == '':
+            await past.send_past_queues(inst, message)
+        else:
+            index = -1
+            try:
+                index = int(args[1])
+                if index < 1 or index > len(inst.past_queues):
+                    await message.add_reaction(dc.reactions.cross)
+                    return
+            except:
+                await message.add_reaction(dc.reactions.cross)
+                return
+            await past.play_past_queue(index-1, inst, message)
+
 
     # elif args[0] in ['np']:
     #     await np.send_np(message.channel, inst)

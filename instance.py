@@ -25,6 +25,7 @@ class Instance:
         self.vc: discord.VoiceClient
         self.bot = bot
         self.rmlist: list[str] = []
+        self.past_queues: list[Queue] = []
 
 
     async def update_queue(self):

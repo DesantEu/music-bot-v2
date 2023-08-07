@@ -4,6 +4,7 @@ import dcHandler as dc
 import bot_locale as loc
 import playlists
 import re
+import pastQ as past
 
 async def play(message:discord.Message, prompt:str, inst):
     # handle empty prompts
@@ -58,6 +59,7 @@ def stop(inst) -> bool:
     inst.isPaused = False
     inst.isPlaying = False
     inst.isStopped = True
+    past.add_past_queue(inst)
     inst.queue.clear()
     return True
 
