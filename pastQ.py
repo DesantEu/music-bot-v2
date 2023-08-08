@@ -2,6 +2,7 @@ import discord
 import bot_locale as loc
 import dcHandler as dc
 import playlists
+import player
 
 def add_rmlist(inst, song_name: str):
     inst.rmlist.append(song_name)
@@ -43,4 +44,21 @@ async def send_past_queues(inst, message: discord.Message):
 
 
 async def play_past_queue(index: int, inst, message: discord.Message):
-    await playlists.play_bulk([i.title for i in inst.past_queues[index]], inst, message)
+    # send notif
+    content = [[f'{inst.queue.len()}. ', i.title] for i in inst.past_queues[index]]
+    await dc.send_long(loc.rmlist_title, loc.qq_smaller_title, content, message.channel)
+
+    # add songs from past queue to current queue
+    for i in inst.past_queues[index]:
+        inst.queue.append(i.link, i.title)
+
+    await inst.update_queue()
+
+    # if nothing is playing we should start playing i guess
+    if not dc.isInVC(message.author):
+        await dc.send(loc.left_vc, message.channel)
+        return -1
+    else:
+        await dc.join(message, inst)
+        if not inst.isPlaying:
+            player.play_from_queue(0, inst) # TODO: remove
