@@ -176,6 +176,7 @@ async def parse(message:discord.Message, inst:Instance):
             return
 
         if player.stop(inst):
+            await inst.update_queue()
             await message.add_reaction(dc.reactions.check)
         else:
             await message.add_reaction(dc.reactions.cross)
