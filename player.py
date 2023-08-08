@@ -2,7 +2,7 @@ import discord
 import ytHandler as yt
 import dcHandler as dc
 import bot_locale as loc
-import playlists
+# import playlists
 import re
 import pastQ as past
 
@@ -25,7 +25,9 @@ async def play(message:discord.Message, prompt:str, inst):
     if prompt.startswith('https://'):
         # handle playlists
         if 'list=' in prompt:
-             isSuccessful = await playlists.play_playlist(message, prompt, inst)
+             # isSuccessful = await playlists.play_playlist(message, prompt, inst)
+            isSuccessful = await yt.play_link(message, yt.remove_playlist_from_link(prompt), inst)
+
         # handle a single song
         else:
             isSuccessful = await yt.play_link(message, prompt, inst)

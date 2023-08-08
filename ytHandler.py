@@ -95,3 +95,6 @@ async def on_search_success(message, inst, emb, title, link, st, silent) -> int:
         await dc.edit_status_title(emb, st, f"{inst.queue.index_title(title) + 1}. {title}")
     await inst.update_queue()
     return 0
+
+def remove_playlist_from_link(link: str) -> str:
+    return link[:link.find('&list=')]
