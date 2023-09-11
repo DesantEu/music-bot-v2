@@ -2,3 +2,9 @@ token.txt
 testToken.txt
 __pycache__/
 songs/*
+bin
+lib
+lib64
+share
+playlists/*
+pyvenv.cfg
