@@ -248,6 +248,7 @@ async def leave(inst) -> int:
         if not inst.hasVC:
             return 1
 
+        inst.vc.cleanup()
         await inst.vc.disconnect()
         del(inst.vc)
 
