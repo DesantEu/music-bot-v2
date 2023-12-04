@@ -27,7 +27,7 @@ def add_past_queue(inst):
 
     inst.past_queues.insert(0, inst.queue.copy())
     if len(inst.past_queues) > 10:
-        _ = inst.past_queues.pop(0)
+        _ = inst.past_queues.pop(-1)
 
 async def send_past_queues(inst, message: discord.Message):
     if len(inst.past_queues) == 0:
