@@ -4,6 +4,7 @@ __pycache__/
 songs/*
 bin
 lib
+saves/*
 lib64
 share
 playlists/*

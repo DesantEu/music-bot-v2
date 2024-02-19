@@ -14,7 +14,7 @@ class Instance:
         self.guildid: int = gid
         self.prefix: str = prefix
         self.queue = Queue()
-        # self.queue_messages: list[int] = []
+        self.queue_messages: list[int] = []
         # self.player: np.Player
         # self.hasPlayer = False
         self.skipSkip = False
@@ -36,7 +36,7 @@ class Instance:
             self.past_queues: list[Queue] = []
             self.rmlist: list[str] = []
             self.prefix: str = prefix
-            self.queue_messages: list[int] = []
+            # self.queue_messages: list[int] = []
 
         print(f"created instance {self.guildid}")
 
@@ -111,7 +111,7 @@ class Instance:
     def toJson(self):
         rJson = {}
         rJson["prefix"] = self.prefix
-        rJson["queue_messages"] = self.queue_messages
+        # rJson["queue_messages"] = self.queue_messages
         rJson["rmlist"] = self.rmlist
         rJson["past_queues"] = [i.toJsonStr() for i in self.past_queues]
 
@@ -121,7 +121,7 @@ class Instance:
         rJson: dict[str, Any] = json.loads(s)
 
         self.prefix = rJson["prefix"]
-        self.queue_messages = rJson["queue_messages"]
+        # self.queue_messages = rJson["queue_messages"]
         self.rmlist = rJson["rmlist"]
 
         for i in rJson["past_queues"]:
