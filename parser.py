@@ -1,3 +1,4 @@
+import json
 import discord
 from instance import Instance
 import player
@@ -262,8 +263,9 @@ async def parse(message:discord.Message, inst:Instance):
         # if yes reset socket
 
     elif args[0] in ['test']:
-        await dc.send_long('asd', 'asd', [['asd', 'asd']], message.channel)
-        await inst.bot.change_presence(activity=discord.Game(name='//help'))
+        # await dc.send_long('asd', 'asd', [['asd', 'asd']], message.channel)
+        # await inst.bot.change_presence(activity=discord.Game(name='//help'))
+        await message.channel.send(json.dumps(inst.toJson()))
         
 
     #

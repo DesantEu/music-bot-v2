@@ -1,6 +1,7 @@
 import discord
 import handler
 import os
+import atexit, asyncio
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -38,6 +39,15 @@ async def on_reaction_add(reaction, user):
         return
 
     await handler.handle_reaction_add(reaction, user)
+
+
+def on_exit():
+    # for k, _ in handler.instances:
+    handler.instances.clear()
+    
+
+atexit.register(on_exit)
+
 
 # yes, you need to make a token.txt
 if os.path.exists('testToken.txt'):

@@ -1,4 +1,8 @@
+import asyncio
 from datetime import datetime
+import json
+import os
+from typing import Any
 import discord
 from songQueue import Queue
 import player
@@ -10,7 +14,7 @@ class Instance:
         self.guildid: int = gid
         self.prefix: str = prefix
         self.queue = Queue()
-        self.queue_messages: list[int] = []
+        # self.queue_messages: list[int] = []
         # self.player: np.Player
         # self.hasPlayer = False
         self.skipSkip = False
@@ -24,8 +28,26 @@ class Instance:
         self.isPaused = False
         self.vc: discord.VoiceClient
         self.bot = bot
-        self.rmlist: list[str] = []
+        # self.rmlist: list[str] = []
         self.past_queues: list[Queue] = []
+
+        if not self.load_from_disk():
+            print(f"could not load instance {self.guildid} from disk")
+            self.past_queues: list[Queue] = []
+            self.rmlist: list[str] = []
+            self.prefix: str = prefix
+            self.queue_messages: list[int] = []
+
+        print(f"created instance {self.guildid}")
+
+    def __del__(self):
+        print(f"destroying instance for {self.guildid}")
+        player.stop(self)
+        asyncio.run(dc.leave(self))
+        # await dc.leave(self)
+
+        self.save_to_disk()
+            
 
 
     async def update_queue(self):
@@ -66,4 +88,49 @@ class Instance:
             return True
         except:
             return False
+
+    def save_to_disk(self):
+        with open(f"saves/{self.guildid}.json", "w+") as file:
+            file.write(json.dumps(self.toJson()))
+
+    def load_from_disk(self) -> bool:
+        if not os.path.exists(f"saves/{self.guildid}.json"):
+            print(f"no save for instance {self.guildid}")
+            return False
+
+        try:
+
+            with open(f"saves/{self.guildid}.json", "r") as file:
+                self.fromJson(file.read())
+                return True
+
+        except Exception as e:
+            print(e)
+            return False
+
+    def toJson(self):
+        rJson = {}
+        rJson["prefix"] = self.prefix
+        rJson["queue_messages"] = self.queue_messages
+        rJson["rmlist"] = self.rmlist
+        rJson["past_queues"] = [i.toJsonStr() for i in self.past_queues]
+
+        return rJson
+
+    def fromJson(self, s: str):
+        rJson: dict[str, Any] = json.loads(s)
+
+        self.prefix = rJson["prefix"]
+        self.queue_messages = rJson["queue_messages"]
+        self.rmlist = rJson["rmlist"]
+
+        for i in rJson["past_queues"]:
+            q = Queue()
+            jsq: dict[str, str] = json.loads(i)
+            for k in jsq.keys():
+                q.append(jsq[k], k)
+
+            self.past_queues.append(q)
+
+
 
