@@ -1,7 +1,7 @@
 import dcHandler as dc
 import bot_locale as loc
-import ytHandler as yt
 import player
+import cacheHandler as cahe
 
 async def play_bulk(prompts: list[str], inst, message):
     # notify the server
@@ -16,12 +16,12 @@ async def play_bulk(prompts: list[str], inst, message):
         await dc.edit_long_status(emb, ind, '-')
         # handle words
         if not 'https://' in pr:
-            if await yt.play_prompt(message, pr, inst, silent=True) == 0:
+            if await cahe.find_prompt_play(message, pr, inst, silent=True) == 0:
                 await dc.edit_long_both(emb, ind, f'{inst.queue.len()}.  ', inst.queue[inst.queue.len()-1].title)
                 song_available = True
         # handle links
         else:
-            if await yt.play_link(message, pr, inst, silent=True) == 0:
+            if await cahe.find_link_play(message, pr, inst, silent=True) == 0:
                 await dc.edit_long_both(emb, ind, f'{inst.queue.len()}.  ', inst.queue[inst.queue.len()-1].title)
                 song_available = True
 

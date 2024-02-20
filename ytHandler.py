@@ -1,7 +1,7 @@
+import json
+from urllib.parse import parse_qs, urlparse
 import yt_dlp as yt
-import dcHandler as dc
-import bot_locale as loc
-import re, os
+import cacheHandler as cahe
 
 options = {
     'max_downloads' : 1
@@ -12,6 +12,8 @@ _dl = yt.YoutubeDL(options)
 async def get_title(link:str):
     try:
         res = _dl.extract_info(link, download=False)
+        with open("test.txt", "w+") as file:
+            file.write(json.dumps(res))
     except:
         return -1
 
@@ -28,41 +30,28 @@ async def get_title(link:str):
     else:
         return -1
 
+def get_cache(prompt, is_link=False) -> cahe.CachedSong | None:
+    speciman = {}
 
-async def play_link(message, link, inst, silent=False) -> int:
-    emb = ''
-    st = -2
-    
-    # get title
-    if not silent: emb = await dc.send(loc.loading_track, message.channel)
-    title = await get_title(link)
-    if title == -1:
-        if not silent: await dc.add_status(emb, loc.search_fail, loc.sorry)
-        return -1
-
-    # download if needed
-    if not silent: st = await dc.add_status(emb, title, loc.search_local)
-    # local search
-    filename = 'songs/' + re.sub(r'[\|/,:&$#"]', '', title) + '.mp3'
-    if not os.path.exists(filename):
-        # start downloading
-        if not silent: await dc.edit_status(emb, st, loc.downloading)
-        dl = await download(link, filename)
-        # donwload success
-        if dl == 0:
-            return await on_search_success(message, inst, emb, title, link, st, silent)
-
-        # download fail
-        else:
-            if not silent: await dc.edit_status(emb, st, loc.download_fail)
-            return -1
-
-    # local search success
+    # get video data
+    if not is_link:
+        res = _dl.extract_info(f"ytsearch1:{prompt}", download=False)
+        if res:
+            speciman = res["entries"][0]
     else:
-        return await on_search_success(message, inst, emb, title, link, st, silent)
+        res = _dl.extract_info(prompt, download=False)
+        if res:
+            speciman = res
 
-async def play_prompt(message, prompt, inst, silent=False):
-    return await play_link(message, f'ytsearch1:{prompt}', inst, silent)
+    # check that we have data
+    if speciman == {}:
+        return None
+
+    # profit
+    return cahe.CachedSong(speciman['id'],
+                           speciman['title'],
+                           [speciman['title'].lower()] if is_link 
+                           else [prompt, speciman['title'].lower()])
 
 
 async def download(link, filename):
@@ -82,19 +71,23 @@ async def download(link, filename):
 
     return 0
 
-async def on_search_success(message, inst, emb, title, link, st, silent) -> int:
-    if not silent:
-        await dc.edit_status(emb, st, loc.search_local_success)
-        # add instaplay reaction
-        if inst.queue.len() > 0:
-            msg = await message.channel.fetch_message(emb)
-            await msg.add_reaction(dc.reactions.play)
 
-    inst.queue.append(link, title, emb)
-    if not silent: 
-        await dc.edit_status_title(emb, st, f"{inst.queue.index_title(title) + 1}. {title}")
-    await inst.update_queue()
-    return 0
+def get_id_from_link(link: str) -> str:
+    parsed = urlparse(link)
+
+    if parsed.hostname == 'youtu.be':
+        return parsed.path[1:]
+    if parsed.hostname in ('www.youtube.com', 'youtube.com'):
+        if parsed.path == '/watch':
+            p = parse_qs(parsed.query)
+            return p['v'][0]
+        if parsed.path[:7] == '/embed/':
+            return parsed.path.split('/')[2]
+        if parsed.path[:3] == '/v/':
+            return parsed.path.split('/')[2]
+
+    return ''
+
 
 def remove_playlist_from_link(link: str) -> str:
     return link[:link.find('&list=')]

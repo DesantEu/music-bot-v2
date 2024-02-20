@@ -1,7 +1,8 @@
 import discord
 import handler
 import os
-import atexit, asyncio
+import atexit
+import cacheHandler as cahe
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -42,8 +43,8 @@ async def on_reaction_add(reaction, user):
 
 
 def on_exit():
-    # for k, _ in handler.instances:
     handler.instances.clear()
+    cahe.save_cache()
     
 
 atexit.register(on_exit)

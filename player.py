@@ -5,6 +5,7 @@ import bot_locale as loc
 # import playlists
 import re
 import pastQ as past
+import cacheHandler as cahe
 
 async def play(message:discord.Message, prompt:str, inst):
     # handle empty prompts
@@ -25,15 +26,14 @@ async def play(message:discord.Message, prompt:str, inst):
     if prompt.startswith('https://'):
         # handle playlists
         if 'list=' in prompt:
-             # isSuccessful = await playlists.play_playlist(message, prompt, inst)
-            isSuccessful = await yt.play_link(message, yt.remove_playlist_from_link(prompt), inst)
+            isSuccessful = await cahe.find_link_play(message, yt.remove_playlist_from_link(prompt), inst)
 
         # handle a single song
         else:
-            isSuccessful = await yt.play_link(message, prompt, inst)
+            isSuccessful = await cahe.find_link_play(message, prompt, inst)
     # handle text search
     else:
-        isSuccessful = await yt.play_prompt(message, prompt, inst)
+        isSuccessful = await cahe.find_prompt_play(message, prompt, inst)
 
     if not isSuccessful == 0:
         return -1
@@ -117,8 +117,8 @@ def skip(inst, num='', afterSong=False) -> int:
     
 
 def play_from_queue(index, inst):
-    title = inst.queue[index].title
-    file = 'songs/' + re.sub(r'[\|/,:&$#"]', '', title) + '.mp3'
+    title = inst.queue[index].link
+    file = 'songs/' + re.sub(r'[\|/,:&$#"]', '', yt.get_id_from_link(title)) + '.mp3'
 
     inst.vc.play(discord.FFmpegPCMAudio(file), after=inst.after_song)
     inst.current = index

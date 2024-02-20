@@ -1,6 +1,6 @@
 import bot_locale as loc
 import dcHandler as dc
-import ytHandler as yt
+import cacheHandler as cahe
 import os
 import json
 import player
@@ -40,13 +40,13 @@ async def play_playlist(message, name, inst) -> int:
         for song in playlist:
             ind = list(playlist).index(song)
             # first try the links
-            if await yt.play_link(message, playlist[song], inst, silent=True) == 0:
+            if await cahe.find_link_play(message, playlist[song], inst, silent=True) == 0:
                 await dc.edit_long_status(emb, ind, f'{inst.queue.len()}.  ')
                 song_available = True
             # if the link fails try to find by name
             else:
                 await dc.edit_long_status(emb, ind, 'V')
-                if await yt.play_prompt(message, song, inst, silent=True) == 0:
+                if await cahe.find_prompt_play(message, song, inst, silent=True) == 0:
                     await dc.edit_long_status(emb, ind, f'{inst.queue.len()}.  ')
                     song_available = True
                 # if everything fails theres nothing we can do really
