@@ -48,10 +48,11 @@ def get_cache(prompt, is_link=False) -> cahe.CachedSong | None:
         return None
 
     # profit
+    title = speciman['title'].lower()
     return cahe.CachedSong(speciman['id'],
                            speciman['title'],
-                           [speciman['title'].lower()] if is_link 
-                           else [prompt, speciman['title'].lower()])
+                           [title] if is_link or prompt == title
+                           else [prompt, title])
 
 
 async def download(link, filename):
