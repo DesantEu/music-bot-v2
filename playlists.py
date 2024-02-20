@@ -21,7 +21,7 @@ async def play_bulk(prompts: list[str], inst, message):
         # handle words
         if not 'https://' in pr:
             # check if the song will be loaded quickly
-            if not (pr in cahe.search_cache and os.path.exists(f"songs/{cahe.search_cache[pr].link}.mp3")):
+            if not (pr.lower() in cahe.search_cache and os.path.exists(f"songs/{cahe.search_cache[pr.lower()].link}.mp3")):
                 content[ind] = ["⌬ ", pr]
                 await dc.edit_long_content(emb, content)
 
