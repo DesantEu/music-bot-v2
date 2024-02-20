@@ -40,13 +40,13 @@ async def play_playlist(message, name, inst) -> int:
         for song in playlist:
             ind = list(playlist).index(song)
             # first try the links
-            if await cahe.find_link_play(message, playlist[song], inst, silent=True) == 0:
+            if await cahe.find_link_play(message, playlist[song], inst, silent=True, skipQueueUpdate=True) == 0:
                 await dc.edit_long_status(emb, ind, f'{inst.queue.len()}.  ')
                 song_available = True
             # if the link fails try to find by name
             else:
                 await dc.edit_long_status(emb, ind, 'V')
-                if await cahe.find_prompt_play(message, song, inst, silent=True) == 0:
+                if await cahe.find_prompt_play(message, song, inst, silent=True, skipQueueUpdate=True) == 0:
                     await dc.edit_long_status(emb, ind, f'{inst.queue.len()}.  ')
                     song_available = True
                 # if everything fails theres nothing we can do really
@@ -69,7 +69,9 @@ async def play_playlist(message, name, inst) -> int:
         if not dc.isInVC(message.author):
             await dc.send(loc.left_vc, message.channel)
 
-        await dc.add_status(emb, loc.playlist_success, dc.reactions.pls_tears)
+        # await dc.add_status(emb, loc.playlist_success, dc.reactions.pls_tears)
+        await message.add_reaction(dc.reactions.check)
+        await inst.update_queue()
 
         return 0
 

@@ -2,27 +2,45 @@ import dcHandler as dc
 import bot_locale as loc
 import player
 import cacheHandler as cahe
+import os
+
+import ytHandler as yt
 
 async def play_bulk(prompts: list[str], inst, message):
-    # notify the server
-    emb = await dc.send_long(loc.rmlist_title, loc.bulk_smaller_title, [['> ', i] for i in prompts], message.channel)
+    content = [['> ', i] for i in prompts]
     song_available = False
     tried_connecting = False
 
+    # notify the server
+    emb = await dc.send_long(loc.rmlist_title, loc.bulk_smaller_title, content, message.channel)
+
     # add songs to queue
-    for pr in prompts:
-        ind = prompts.index(pr)
-        # indicate works on song
-        await dc.edit_long_status(emb, ind, '-')
+    for ind in range(len(prompts)):
+        pr = prompts[ind]
+
         # handle words
         if not 'https://' in pr:
-            if await cahe.find_prompt_play(message, pr, inst, silent=True) == 0:
-                await dc.edit_long_both(emb, ind, f'{inst.queue.len()}.  ', inst.queue[inst.queue.len()-1].title)
+            # check if the song will be loaded quickly
+            if not (pr in cahe.search_cache and os.path.exists(f"songs/{cahe.search_cache[pr].link}.mp3")):
+                content[ind] = ["⌬ ", pr]
+                await dc.edit_long_content(emb, content)
+
+            if await cahe.find_prompt_play(message, pr, inst, silent=True, skipQueueUpdate=True) == 0:
+                content[ind] = [f'{inst.queue.len()}.  ', inst.queue[inst.queue.len()-1].title]
+
                 song_available = True
+
         # handle links
         else:
-            if await cahe.find_link_play(message, pr, inst, silent=True) == 0:
-                await dc.edit_long_both(emb, ind, f'{inst.queue.len()}.  ', inst.queue[inst.queue.len()-1].title)
+            # check if the song will be loaded quickly
+            id = yt.get_id_from_link(pr)
+            if not (id in cahe.cache and os.path.exists(f"songs/{id}.mp3")):
+                content[ind] = ["⌬ ", pr]
+                await dc.edit_long_content(emb, content)
+
+            if await cahe.find_link_play(message, pr, inst, silent=True, skipQueueUpdate=True) == 0:
+                content[ind] = [f'{inst.queue.len()}.  ', inst.queue[inst.queue.len()-1].title]
+
                 song_available = True
 
 
@@ -43,6 +61,9 @@ async def play_bulk(prompts: list[str], inst, message):
         await dc.send(loc.left_vc, message.channel)
 
     await dc.add_status(emb, loc.playlist_success, dc.reactions.pls_tears)
+
+    await inst.update_queue()
+    await dc.edit_long_content(emb, content)
 
 
 async def play_playlist(message, link, inst, exception=''):

@@ -34,7 +34,7 @@ cache: dict[str, CachedSong]
 # search - song
 search_cache: dict[str, CachedSong]
 
-async def find_link_play(message, link, inst, silent=False) -> int:
+async def find_link_play(message, link, inst, silent=False, skipQueueUpdate=False) -> int:
     global cache
     emb = ''
     st = -2
@@ -51,7 +51,7 @@ async def find_link_play(message, link, inst, silent=False) -> int:
     if prompt in cache:
         # add song name
         if not silent: st = await dc.add_status(emb, cache[prompt].title, loc.search_local)
-        return await play_cached(message, cache[prompt], inst, silent, emb, st)
+        return await play_cached(message, cache[prompt], inst, silent, emb, st, skipQueueUpdate)
 
     else:
         # notify that we are searching
@@ -63,17 +63,14 @@ async def find_link_play(message, link, inst, silent=False) -> int:
         if not info == None:
             cache[info.link] = info
 
-            # notify that we have info
-            await dc.edit_status_title(emb, st, info.title)
-            await dc.edit_status(emb, st, loc.search_local)
-            return await play_cached(message, info, inst, silent, emb, st)
+            return await play_cached(message, info, inst, silent, emb, st, skipQueueUpdate)
 
         else:
             if not silent: await dc.edit_status(emb, st, loc.search_fail)
             return -1
 
 
-async def find_prompt_play(message, prompt: str, inst, silent=False) -> int:
+async def find_prompt_play(message, prompt: str, inst, silent=False, skipQueueUpdate=False) -> int:
     global search_cache, cache
     emb = ''
     st = -2
@@ -86,7 +83,7 @@ async def find_prompt_play(message, prompt: str, inst, silent=False) -> int:
     if prompt in search_cache:
         # add song name
         if not silent: st = await dc.add_status(emb, search_cache[prompt].title, loc.search_local)
-        return await play_cached(message, search_cache[prompt], inst, silent, emb, st)
+        return await play_cached(message, search_cache[prompt], inst, silent, emb, st, skipQueueUpdate)
 
     else:
         # notify that we are searching
@@ -104,10 +101,7 @@ async def find_prompt_play(message, prompt: str, inst, silent=False) -> int:
                 cache[info.link] = info
                 search_cache[prompt] = info
 
-            # notify that we have info
-            await dc.edit_status_title(emb, st, info.title)
-            await dc.edit_status(emb, st, loc.search_local)
-            return await play_cached(message, info, inst, silent, emb, st)
+            return await play_cached(message, info, inst, silent, emb, st, skipQueueUpdate)
 
         else:
             if not silent: await dc.edit_status(emb, st, loc.search_fail)
@@ -115,7 +109,7 @@ async def find_prompt_play(message, prompt: str, inst, silent=False) -> int:
 
 
 
-async def play_cached(message, song: CachedSong, inst, silent, emb, st) -> int:
+async def play_cached(message, song: CachedSong, inst, silent, emb, st, squ) -> int:
     # search for song on disk
     filename = 'songs/' + re.sub(r'[\|/,:&$#"]', '', song.link) + '.mp3'
     full_link = 'https://www.youtube.com/watch?v=' + song.link
@@ -127,16 +121,16 @@ async def play_cached(message, song: CachedSong, inst, silent, emb, st) -> int:
         dl = await yt.download(full_link, filename)
         # check how that went
         if dl == 0:
-            return await on_search_success(message, inst, emb, song.title, full_link, st, silent)
+            return await on_search_success(message, inst, emb, song.title, full_link, st, silent, squ)
         else:
             if not silent: await dc.edit_status(emb, st, loc.download_fail)
             return -1
     else:
 
-        return await on_search_success(message, inst, emb, song.title, full_link, st, silent)
+        return await on_search_success(message, inst, emb, song.title, full_link, st, silent, squ)
 
 
-async def on_search_success(message, inst, emb, title, link, st, silent) -> int:
+async def on_search_success(message, inst, emb, title, link, st, silent, squ) -> int:
     if not silent:
         await dc.edit_status(emb, st, loc.search_local_success)
         # add instaplay reaction
@@ -147,7 +141,8 @@ async def on_search_success(message, inst, emb, title, link, st, silent) -> int:
     inst.queue.append(link, title, emb)
     if not silent: 
         await dc.edit_status_title(emb, st, f"{inst.queue.index_title(title) + 1}. {title}")
-    await inst.update_queue()
+    if not squ:
+        await inst.update_queue()
     return 0
 
 
@@ -173,7 +168,6 @@ def load_cache():
             for i in json.loads(file.read()):
                 song = CachedSong()
                 song.fromJson(i)
-                print(song)
 
                 add_to_cache(song)                
 
