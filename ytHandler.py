@@ -54,6 +54,15 @@ def get_cache(prompt, is_link=False) -> cahe.CachedSong | None:
                            [title] if is_link or prompt == title
                            else [prompt, title])
 
+def get_playlist_cache(link) -> cahe.CachedSong | None:
+    res = _dl.extract_info(link, download=False)
+
+    if res:
+        return cahe.CachedSong(res['id'],
+                               res['title'],
+                               [i['id'] for i in res['entries']],
+                               is_playlist=True)
+
 
 async def download(link, filename):
     #TODO: this is probably dumb
@@ -88,6 +97,19 @@ def get_id_from_link(link: str) -> str:
             return parsed.path.split('/')[2]
 
     return ''
+
+
+def get_id_from_playlist_link(link: str) -> str:
+    begin = link[link.find('list=') + 5:]
+    questions = begin.find('?')
+    if questions > 0:
+        begin = begin[:questions]
+
+    ampersands = begin.find("&")
+    if ampersands > 0:
+        begin = begin[:ampersands]
+
+    return begin
 
 
 def remove_playlist_from_link(link: str) -> str:

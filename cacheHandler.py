@@ -4,18 +4,21 @@ from typing import Any
 import ytHandler as yt
 import dcHandler as dc
 import bot_locale as loc
+import playlists
 
 class CachedSong:
-    def __init__(self, link: str='', title: str='', searches: list[str]=[]):
+    def __init__(self, link: str='', title: str='', searches: list[str]=[], is_playlist=False):
         self.link = link
         self.title = title
         self.searches = searches
+        self.is_playlist = is_playlist
 
     def toJson(self):
         rJson = {}
         rJson['link'] = self.link
         rJson['title'] = self.title
         rJson['searches'] = self.searches
+        rJson['is_playlist'] = self.is_playlist
 
         return rJson
 
@@ -23,6 +26,10 @@ class CachedSong:
         self.link = o['link']
         self.title = o['title']
         self.searches = o['searches']
+        if 'is_playlist' in o:
+            self.is_playlist = o['is_playlist']
+        else:
+            self.is_playlist = False
 
     def __str__(self) -> str:
         return json.dumps(self.toJson())
@@ -33,6 +40,9 @@ cache: dict[str, CachedSong]
 
 # search - song
 search_cache: dict[str, CachedSong]
+
+# playlist id - song with song ids in searches
+playlist_cache: dict[str, CachedSong]
 
 async def find_link_play(message, link, inst, silent=False, skipQueueUpdate=False) -> int:
     global cache
@@ -108,6 +118,34 @@ async def find_prompt_play(message, prompt: str, inst, silent=False, skipQueueUp
             return -1
 
 
+async def find_playlist_play(message, prompt: str, inst) -> int:
+    global playlist_cache
+    id = yt.get_id_from_playlist_link(prompt)
+
+    if id in playlist_cache:
+        await playlists.play_bulk(['https://www.youtube.com/watch?v='+i for i in playlist_cache[id].searches]
+                                  , inst, message, title=loc.playlist_on, sub_title=f"{playlist_cache[id].title}")
+    else:
+        # notify of the long ass wait
+        await dc.send(loc.wait, message.channel)
+        # message.channel.send(loc.wait)
+
+        # get the big ass playlist data
+        info = yt.get_playlist_cache(prompt)
+
+        if not info:
+            return -1
+
+        playlist_cache[info.link] = info
+
+        # play this piece of shit
+        await playlists.play_bulk(['https://www.youtube.com/watch?v='+i for i in info.searches]
+                                  , inst, message, title=loc.playlist_on, sub_title=f"{playlist_cache[id].title}")
+        
+
+    return 0
+
+
 
 async def play_cached(message, song: CachedSong, inst, silent, emb, st, squ) -> int:
     # search for song on disk
@@ -148,7 +186,12 @@ async def on_search_success(message, inst, emb, title, link, st, silent, squ) ->
 
 
 def add_to_cache(song: CachedSong):
-    global cache, search_cache
+    global cache, search_cache, playlist_cache
+
+    if song.is_playlist:
+        playlist_cache[song.link] = song
+        return
+
     # add to link cache
     cache[song.link] = song
 
@@ -157,11 +200,12 @@ def add_to_cache(song: CachedSong):
         search_cache[s] = song
 
 def load_cache():
-    global cache, search_cache
+    global cache, search_cache, playlist_cache
 
     print("loading cache...")
     cache = {}
     search_cache = {}
+    playlist_cache = {}
     
     try:
         with open("saves/cache.json", "r") as file:
@@ -169,7 +213,7 @@ def load_cache():
                 song = CachedSong()
                 song.fromJson(i)
 
-                add_to_cache(song)                
+                add_to_cache(song)
 
     except Exception as e:
         print(f"got exception loading cache:")
@@ -185,6 +229,9 @@ def save_cache():
     for k in cache.keys():
         l.append(cache[k].toJson())
 
+    for p in playlist_cache:
+        l.append(playlist_cache[p].toJson())
+
     with open(f"saves/cache.json", "w+") as file:
         file.write(json.dumps(l))
 
@@ -193,5 +240,6 @@ def save_cache():
 if not os.path.exists("saves/cache.json"):
     cache = {}
     search_cache = {}
+    playlist_cache = {}
 else:
     load_cache()

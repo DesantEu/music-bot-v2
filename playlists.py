@@ -6,13 +6,13 @@ import os
 
 import ytHandler as yt
 
-async def play_bulk(prompts: list[str], inst, message):
+async def play_bulk(prompts: list[str], inst, message, title:str=loc.rmlist_title, sub_title=loc.bulk_smaller_title):
     content = [['> ', i] for i in prompts]
     song_available = False
     tried_connecting = False
 
     # notify the server
-    emb = await dc.send_long(loc.rmlist_title, loc.bulk_smaller_title, content, message.channel)
+    emb = await dc.send_long(title, sub_title, content, message.channel)
 
     # add songs to queue
     for ind in range(len(prompts)):
@@ -66,5 +66,7 @@ async def play_bulk(prompts: list[str], inst, message):
     await dc.edit_long_content(emb, content)
 
 
-async def play_playlist(message, link, inst, exception=''):
-    await dc.send(loc.not_available, message.channel)
+async def play_playlist(message, link, inst) -> int:
+    # maybe verify link or what idk
+
+    return await cahe.find_playlist_play(message, link, inst)

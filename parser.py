@@ -219,6 +219,12 @@ async def parse(message:discord.Message, inst:Instance):
         await lpl.save_playlist(message, args[1], inst)
 
     elif args[0] in ['pp']:
+        if "https://" in args[1] and "list=" in args[1]:
+            if not await playlists.play_playlist(message, args[1], inst) == 0:
+                await message.add_reaction(dc.reactions.fyou)
+
+            return
+
         await lpl.play_playlist(message, args[1], inst)
 
     elif args[0] in ['pl']:
