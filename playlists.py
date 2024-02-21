@@ -60,7 +60,7 @@ async def play_bulk(prompts: list[str], inst, message, title:str=loc.rmlist_titl
     if not dc.isInVC(message.author):
         await dc.send(loc.left_vc, message.channel)
 
-    await dc.add_status(emb, loc.playlist_success, dc.reactions.pls_tears)
+    await message.add_reaction(dc.reactions.check)
 
     await inst.update_queue()
     await dc.edit_long_content(emb, content)
