@@ -66,6 +66,13 @@ class Instance:
 
     def after_song(self, error):
         if error:
+            try:
+                with open("error_log.log", "w+") as file:
+                    log = file.read()
+                    log += f"[{datetime.now()}] [after_song]: '{error}'"
+                    file.write(log)
+            except Exception as e:
+                print(f"WTF?!?!? {e}")
             return
 
         # avoid recursion when skipping
