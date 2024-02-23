@@ -49,6 +49,7 @@ def get_cache(prompt, is_link=False) -> cahe.CachedSong | None:
 
     # profit
     title = speciman['title'].lower()
+    title = title.encode().decode('unicode_escape').encode('latin1').decode('utf-8') # encoding fix
     return cahe.CachedSong(speciman['id'],
                            speciman['title'],
                            [title] if is_link or prompt == title

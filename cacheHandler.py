@@ -45,7 +45,7 @@ search_cache: dict[str, CachedSong]
 playlist_cache: dict[str, CachedSong]
 
 async def find_link_play(message, link, inst, silent=False, skipQueueUpdate=False) -> int:
-    global cache
+    global search_cache, cache
     emb = ''
     st = -2
 
@@ -72,7 +72,8 @@ async def find_link_play(message, link, inst, silent=False, skipQueueUpdate=Fals
 
         if not info == None:
             cache[info.link] = info
-
+            for i in info.searches:
+                search_cache[i] = info
             return await play_cached(message, info, inst, silent, emb, st, skipQueueUpdate)
 
         else:
@@ -106,10 +107,14 @@ async def find_prompt_play(message, prompt: str, inst, silent=False, skipQueueUp
             # check if known link
             if info.link in cache:
                 cache[info.link].searches.append(prompt)
-                search_cache[prompt] = cache[info.link]
+                # search_cache[prompt] = cache[info.link]
+                for i in info.searches:
+                    search_cache[i] = info
             else:
                 cache[info.link] = info
                 search_cache[prompt] = info
+                for i in info.searches:
+                    search_cache[i] = info
 
             return await play_cached(message, info, inst, silent, emb, st, skipQueueUpdate)
 
