@@ -269,6 +269,8 @@ class reactions:
    
     cold = '🥶'
     hot = '🥵'
+    mew1 = '🤫'
+    mew2 = '🧏'
 
     pls ='🥺'
     pls_tears = '🥹'

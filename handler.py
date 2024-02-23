@@ -14,7 +14,7 @@ else:
     admin_prefix = ','
 
 
-admins = ['Desant#0148']
+admins = ['desantua']
 
 instances:dict[int, Instance] = {}
 
@@ -33,6 +33,15 @@ async def handle(message:discord.Message, bot: discord.Client):
     # parse regular commands
     if message.content.startswith(prefix):
         await parser.parse(message, instances[gid])
+
+    # parse admin commands
+    if message.content.startswith(admin_prefix):
+        if not message.author.name in admins:
+            await message.add_reaction(dc.reactions.mew1)
+            # await message.add_reaction(dc.reactions.mew2)
+            return
+
+        await parser.parse_admin(message, instances[gid])
 
 
 async def handle_voice(member, before, after):

@@ -6,6 +6,10 @@ import localPlaylists as lpl
 import bot_locale as loc
 import pastQ as past
 import playlists
+import cacheHandler as cahe
+import os
+import handler
+
 # import nowPlaying as np
 
 import dcHandler as dc
@@ -320,47 +324,77 @@ async def parse(message:discord.Message, inst:Instance):
 #     elif args[0] in ['v', 'volume']:
 #         await mplayer.volume_(args[1], message, bot)
 #
-#     elif args[0] == 'help':
-#         await help(bot, chan)
-#
-#
-# async def parse_admin(bot, message):
-#     msg = message.content.lower()[1:]
-#     chan = message.channel
-#
-#     args = msg.split(" ", 1)
-#     args[0] = args[0].lower()
-#     if len(args) == 1:
-#         args.append('')
-#
-#     if args[0] == 'clean':
-#         shutil.rmtree('queue')
-#         await msender.send('Освободил место', message.channel)
-#
-#     elif args[0] == 'dj':
-#         bot.dj_check = not bot.dj_check
-#         await msender.send(f'Проверка на роль: {bot.dj_check}', message.channel)
-#
-#     elif args[0] == 'debug':
-#         bot.debug = not bot.debug
-#         await msender.send(f'Можно ломаться: {bot.debug}', message.channel)
-#
-#     elif args[0] == 'shutdown':
-#         await msender.send('Смэрть', chan)
-#         exit()
-#
-#     elif args[0] in ['dpl', 'delpl', 'rmpl']:
-#         await mplayer.del_playlist(args[1], message)
-#
-#     elif args[0] in ['admin', 'adminonly', 'ao']:
-#         bot.admin_only = not bot.admin_only
-#         await msender.send(f'Админ онли: {bot.admin_only}', message.channel)
+    elif args[0] == 'help':
+        await help(message.channel, inst)
+
+
+
+
+async def parse_admin(message:discord.Message, inst:Instance):
+    msg = message.content.lower()[1:]
+    chan = message.channel
+
+    args = msg.split(" ", 1)
+    args[0] = args[0].lower()
+    if len(args) == 1:
+        args.append('')
+
+    if args[0] in ['rmcache']:
+        if os.path.exists('saves/cache.json'):
+            os.replace("saves/cache.json", "saves/cache.json.bak")
+
+        with open("saves/cache.json", "w+") as file:
+            file.write("[]")
+
+        cahe.load_cache()
+
+        await message.add_reaction(dc.reactions.check)
+
+
+    if args[0] in ['rmh', 'rmhistory']:
+        inst.past_queues = []
+        await message.add_reaction(dc.reactions.check)
+
+    if args[0] in ['dpl', 'delpl', 'rmpl']:
+        path = f"playlists/{args[1]}.lpl"
+
+        if args[1] in [".", '', '/'] or not os.path.exists(path):
+            await message.add_reaction(dc.reactions.cross)
+            return
+
+        os.replace(path, path + ".deleted")
+        await message.add_reaction(dc.reactions.check)
+            
+        
+
+    # if args[0] == 'clean':
+    #     shutil.rmtree('queue')
+    #     await msender.send('Освободил место', message.channel)
+    #
+    # elif args[0] == 'dj':
+    #     bot.dj_check = not bot.dj_check
+    #     await msender.send(f'Проверка на роль: {bot.dj_check}', message.channel)
+    #
+    # elif args[0] == 'debug':
+    #     bot.debug = not bot.debug
+    #     await msender.send(f'Можно ломаться: {bot.debug}', message.channel)
+    #
+    # elif args[0] == 'shutdown':
+    #     await msender.send('Смэрть', chan)
+    #     exit()
+    #
+    # elif args[0] in ['dpl', 'delpl', 'rmpl']:
+    #     await mplayer.del_playlist(args[1], message)
+    #
+    # elif args[0] in ['admin', 'adminonly', 'ao']:
+    #     bot.admin_only = not bot.admin_only
+    #     await msender.send(f'Админ онли: {bot.admin_only}', message.channel)
 #
     elif args[0] == 'help':
-        await help(message.channel)
+        await help(message.channel, inst, admin=True)
 #
 
-async def help(chan, admin=False):
+async def help(chan, inst, admin=False):
     commands = []
     descriptions = []
     if admin:
@@ -378,8 +412,8 @@ async def help(chan, admin=False):
     emb = discord.Embed()
     # emb.color = discord.Color.green()
     emb.color = discord.Color.from_rgb(252, 108, 133)
-    # prefix = bot.prefix if not admin else bot.admin_prefix
-    prefix = '//'
+    prefix = inst.prefix if not admin else handler.admin_prefix
+    # prefix = '//'
     for i in range(len(commands)):
         emb.add_field(
             name=prefix + f' {prefix}'.join(commands[i].split(", ")), value=descriptions[i], inline=False)
