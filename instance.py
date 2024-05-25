@@ -7,6 +7,7 @@ import discord
 from songQueue import Queue
 import player
 import dcHandler as dc
+import bot_locale as loc
 # import nowPlaying as np
 
 class Instance:
@@ -63,6 +64,18 @@ class Instance:
         for i in self.queue_messages:
             # await dc.edit_status(i, self.queue_messages[i], self.queue)
             await dc.edit_long_content(i, [[f'{self.queue.index(i) + 1}. ', i.title] for i in self.queue])
+
+
+    def update_now_playing(self):
+        if self.queue.len() == 0:
+            song_title = "..."
+        else:
+            # song_title = loc.now_playing + " " + self.queue[self.current].title
+            song_title = f"{loc.now_playing} {self.current + 1}. {self.queue[self.current].title}"
+        for i in self.queue_messages:
+            asyncio.run_coroutine_threadsafe(dc.edit_long_smaller_title(i, song_title),
+                                             asyncio.get_running_loop())
+
 
     def after_song(self, error):
         if error:

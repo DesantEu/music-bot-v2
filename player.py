@@ -122,6 +122,7 @@ def play_from_queue(index, inst):
 
     inst.vc.play(discord.FFmpegPCMAudio(file), after=inst.after_song)
     inst.current = index
+    inst.update_now_playing()
     resume(inst)
 
 

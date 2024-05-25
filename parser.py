@@ -62,6 +62,8 @@ async def parse(message:discord.Message, inst:Instance):
             await message.add_reaction(dc.reactions.fyou)
             return
         if player.stop(inst) and await dc.leave(inst) == 0:
+            await inst.update_queue()
+            inst.update_now_playing()
             await message.add_reaction(dc.reactions.wave)
         else:
             await message.add_reaction(dc.reactions.cross)
@@ -148,20 +150,40 @@ async def parse(message:discord.Message, inst:Instance):
             await message.channel.send(loc.warn_reaction)
 
 
+        # ensure they are unique
+        temp = []
+        for i in indeces:
+            if not i in temp:
+                temp.append(i)
+        indeces = temp
 
         # reverse and delete from end cuz indeces change and shit
         indeces = sorted(indeces, reverse=True)
+        current_reduce = 0
+        skip_later = inst.current in indeces
 
         for i in indeces:
+            if i <= inst.current:
+                current_reduce += 1
+
             res = inst.queue.pop(str(i))
             if not res == '':
+                # save to rmlist
                 past.add_rmlist(inst, res)
-                # await inst.update_queue()
+                # stop if queue is empty
                 if inst.queue.len() == 0:
                     player.stop(inst)
                 success = True
 
+        inst.current -= current_reduce
+
         await inst.update_queue()
+        if skip_later:
+            inst.current -= 1
+            if not player.skip(inst) == 0:
+                warns += 1
+        else:
+            inst.update_now_playing()
 
 
         if success:
@@ -181,6 +203,7 @@ async def parse(message:discord.Message, inst:Instance):
             return
 
         if player.stop(inst):
+            inst.update_now_playing()
             await inst.update_queue()
             await message.add_reaction(dc.reactions.check)
         else:
@@ -193,7 +216,11 @@ async def parse(message:discord.Message, inst:Instance):
             return
 
         content = inst.queue.toContent()
-        emb = await dc.send_long(loc.queue, loc.now_playing + '...', content, message.channel)
+        if inst.queue.len() == 0:
+            song_title = "..."
+        else:
+            song_title = f"{loc.now_playing} {inst.current + 1}. {inst.queue[inst.current].title}"
+        emb = await dc.send_long(loc.queue, song_title, content, message.channel)
         inst.queue_messages.append(emb)
 
     elif args[0] in ['qq']:
