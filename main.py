@@ -53,7 +53,7 @@ atexit.register(on_exit)
 # yes, you need to make a token.txt
 if os.path.exists('testToken.txt'):
     with open('testToken.txt', 'r') as token:
-        client.run(token.read())
+        client.run(token.read(), log_level=5)
 else:
     with open('token.txt', 'r') as token:
         client.run(token.read())
