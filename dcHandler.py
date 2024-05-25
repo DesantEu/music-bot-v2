@@ -61,12 +61,18 @@ class LongMessage:
         return emb
 
 
-    async def edit(self, ind, status='', text=''):
+    async def edit(self, ind, status='', text='', title='', smaller_title=''):
         if not status == '':
             self.content[ind][0] = status
 
         if not text == '':
             self.content[ind][1] = text
+
+        if not title == '':
+            self.title = title
+
+        if not smaller_title == '':
+            self.smaller_title = smaller_title
 
         self.regenerate()
 
@@ -168,6 +174,14 @@ async def edit_long_both(id, index: int, status: str, text: str) -> int:
 
 async def edit_long_content(id, content:list[list]) -> int:
     await long_messages[id].setContent(content)
+    return 0
+
+async def edit_long_title(id, title: str) -> int:
+    await long_messages[id].edit(0, title=title)
+    return 0
+
+async def edit_long_smaller_title(id, smaller_title: str) -> int:
+    await long_messages[id].edit(0, smaller_title=smaller_title)
     return 0
 
 async def edit(id, title:str, body:dict[str,str]={}, color=color_pink):
