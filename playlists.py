@@ -70,3 +70,26 @@ async def play_playlist(message, link, inst) -> int:
     # maybe verify link or what idk
 
     return await cahe.find_playlist_play(message, link, inst)
+
+async def mix(message, prompt, inst, limit=10) -> int:
+    await message.add_reaction(dc.reactions.thinking)
+
+    vid = ''
+    # get id
+    if prompt.startswith("https://"):
+        if "list=" in prompt:
+            prompt = yt.remove_playlist_from_link(prompt)
+        vid = yt.get_id_from_link(prompt)
+    else:
+        if prompt in cahe.search_cache:
+            vid = cahe.search_cache[prompt].link
+        else:
+            info = yt.get_cache(prompt)
+            vid = info.link
+
+    playlist_link = f"https://www.youtube.com/watch?v={vid}&list=RD{vid}"
+
+    songs = yt.get_mix_links(playlist_link, limit)
+    await message.remove_reaction(dc.reactions.thinking, inst.bot.user)
+    await play_bulk(songs, inst, message)
+

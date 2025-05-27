@@ -280,6 +280,7 @@ class reactions:
     fyou = '🖕'
     wave = '👋'
     thumbs_up = '👍'
+    thinking = '🧠'
    
     cold = '🥶'
     hot = '🥵'

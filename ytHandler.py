@@ -64,6 +64,21 @@ def get_playlist_cache(link) -> cahe.CachedSong | None:
                                [i['id'] for i in res['entries']],
                                is_playlist=True)
 
+def get_mix_links(link, limit) -> list[str]:
+    ydl_opts = {
+    'extract_flat': True,
+    'dump_single_json': True,
+    'playlistend' : limit,
+    # 'quiet': True,
+    }
+
+    with yt.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(link, download=False)
+        entries = info.get('entries', [])
+        video_urls = ['https://www.youtube.com/watch?v=' + entry['id'] for entry in entries]
+        
+        return video_urls
+
 
 async def download(link, filename):
     #TODO: this is probably dumb
